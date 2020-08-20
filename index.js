@@ -51,7 +51,6 @@ function getStocks() {
         date: data[0].date,
       };
       const stockMsg = {
-        content: `<@347050357857452042>`,
         embed: {
           title: `${stock.short} | ${stock.company}`,
           color: 2664261,
@@ -80,7 +79,7 @@ function getStocks() {
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   roleClaim(client); // TODO Create an own custom solution for this feature
-  var job = new cron("1 0 22 * * 0-5", function () {
+  var job = new cron("0 1 22 * * 0-5", function () {
     getStocks();
   });
   job.start();
