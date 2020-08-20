@@ -1,1 +1,1 @@
-screen -R -S DulliBot bash run.sh
+screen -R -S DulliBot bash start.sh
