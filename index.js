@@ -86,6 +86,13 @@ client.on("ready", () => {
 });
 
 client.on("guildMemberAdd", (member) => {
+  client.channels.cache
+    .get(channels.stats.member)
+    .setName(`Mitglieder: ${member.guild.members.cache.filter((m) => !m.user.bot).size}`);
+  client.channels.cache
+    .get(channels.stats.bots)
+    .setName(`Bots: ${member.guild.members.cache.filter((m) => m.user.bot).size}`);
+
   var role = member.guild.roles.cache.find((role) => role.id == roles.guest);
   var welcomeChannel = client.channels.cache.find((channel) => channel.id == channels.welcome);
   member.roles
@@ -113,6 +120,15 @@ client.on("guildMemberAdd", (member) => {
     .catch((err) => {
       sendError("Willkommensnachricht schicken", err);
     });
+});
+
+client.on("guildMemberAdd", (member) => {
+  client.channels.cache
+    .get(channels.stats.member)
+    .setName(`Mitglieder: ${member.guild.members.cache.filter((m) => !m.user.bot).size}`);
+  client.channels.cache
+    .get(channels.stats.bots)
+    .setName(`Bots: ${member.guild.members.cache.filter((m) => m.user.bot).size}`);
 });
 
 client.on("message", (msg) => {
