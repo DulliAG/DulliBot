@@ -66,7 +66,7 @@ function getStocks() {
           fields: [
             {
               name: "Details",
-              value: `:clock330:  Eröffnet: ${temp.open} $\n:chart_with_upwards_trend: Hoch: ${temp.high} $\n:chart_with_downwards_trend: Tief: ${temp.low} $\n:clock10: Geschlossen: ${temp.close} $`,
+              value: `:clock330: Eröffnet: ${temp.open} $\n:chart_with_upwards_trend: Hoch: ${temp.high} $\n:chart_with_downwards_trend: Tief: ${temp.low} $\n:clock10: Geschlossen: ${temp.close} $\n :bank: Volumen: ${temp.volume} $`,
             },
           ],
         },
