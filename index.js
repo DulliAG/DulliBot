@@ -115,14 +115,14 @@ client.on("guildMemberAdd", (member) => {
         },
       };
       member.send(welcomeMsg);
-      welcomeChannel.send("@everyone", welcomeMsg);
+      welcomeChannel.send("", welcomeMsg);
     })
     .catch((err) => {
       sendError("Willkommensnachricht schicken", err);
     });
 });
 
-client.on("guildMemberAdd", (member) => {
+client.on("guildMemberRemove", (member) => {
   client.channels.cache
     .get(channels.stats.member)
     .setName(`Mitglieder: ${member.guild.members.cache.filter((m) => !m.user.bot).size}`);
