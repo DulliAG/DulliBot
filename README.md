@@ -90,8 +90,9 @@ _Make sure you have [cloned](#installation) the Repository before this steps_
 
 _To execute an command you need to add the prefix `!`_
 
-| Command | Action                       |
-| ------- | ---------------------------- |
-| `clear` | Deletes all channel-messages |
-| `ban`   | Ban an player                |
-| `kick`  | Kick an player               |
+| Command  | Action                       |
+| -------- | ---------------------------- |
+| `clear`  | Deletes all channel-messages |
+| `ban`    | Ban an player                |
+| `kick`   | Kick an player               |
+| `stocks` | Get the current share price  |

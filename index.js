@@ -183,6 +183,8 @@ client.on("message", (msg) => {
       } else {
         msg.reply("hat keine Rechte zum aufräumen des Kanals!");
       }
+    } else if (msg.content == "!stocks") {
+      getStocks();
     } else if (msg.content.substring(0, 1) == "!") {
       // Send an message with an command-list
       // TODO Select command-list from command.json
@@ -196,7 +198,7 @@ client.on("message", (msg) => {
           },
           {
             name: "Registrierte Befehle",
-            value: `!clear | Kanalnachrichten leeren\n!ban | Mitglied bannen\n!kick | Mitglied kicken`,
+            value: `!clear | Kanalnachrichten leeren\n!ban | Mitglied bannen\n!kick | Mitglied kicken\n!stocks | Aktienkurse abrufen`,
           }
         )
         .setTimestamp()
