@@ -6,7 +6,7 @@
   DAG-Discord-Bot
 </h1>
 
-# Features
+## :rocket: Features
 
 - [x] Configuration via JSON-File
 - [x] Welcome message(for server & user)
@@ -19,9 +19,25 @@
   - Done by Discord.RSS
 - [x] Get stock informations(for specific stocks)
 
-# Installation
+## :calendar: Planned features
 
-_!!! Make sure you have registered an Discord-Bot !!!_
+#### :chart_with_upwards_trend: Stocks
+
+- [ ] Add graph to daily reports
+- [ ] Add graph with current
+- [ ] Weekly Reports
+  - Development of a share summarized in a graph
+- [ ] Get a list of all subscribed stocks
+- [ ] Add & delete stocks via command
+
+#### :warning: Warn system
+
+- [ ] Warn an player
+- [ ] Kick or ban player after an amount of warns
+
+## :wrench: Installation
+
+_**!!! Make sure you have registered an Discord-Bot !!!**_
 
 1. Clone the Repository `git clone https://github.com/tklein1801/Discord-Bot.git`
 
@@ -31,7 +47,7 @@ _!!! Make sure you have registered an Discord-Bot !!!_
 
 4. Create an config.json like this
 
-_There are only stocks from nasdaq supported_
+_**!!! There are all stocks from Google Finance supported !!!**_
 
 ```
 {
@@ -57,20 +73,19 @@ _There are only stocks from nasdaq supported_
   },
   "stocks": [
     {
+      "place": "NASDAQ",
       "company": "Tesla",
-      "short": "TSLA"
+      "symbol": "TSLA"
     },
     {
-      "company": "Apple",
-      "short": "AAPL"
+      "place": "FRA",
+      "company": "Siemens",
+      "symbol": "SIE"
     },
     {
-      "company": "Facebook",
-      "short": "FB"
-    },
-    {
+      "place": "NASDAQ",
       "company": "Microsoft",
-      "short": "MSFT"
+      "symbol": "MSFT"
     }
   ]
 }
@@ -78,7 +93,7 @@ _There are only stocks from nasdaq supported_
 
 5. Now you can follow the [Hosting](#hosting) steps
 
-# Hosting
+## :gear: Hosting
 
 **Linux**
 _Make sure you have [cloned](#installation) the Repository before this steps_
@@ -86,7 +101,7 @@ _Make sure you have [cloned](#installation) the Repository before this steps_
 1. Run the command `bash createScreen.sh`
    _NOTE: You need `screen` to run this SHELL-Script_
 
-# Commands
+## :postal_horn: Commands
 
 _To execute an command you need to add the prefix `!`_
 
@@ -96,3 +111,10 @@ _To execute an command you need to add the prefix `!`_
 | `ban`    | Ban an player                |
 | `kick`   | Kick an player               |
 | `stocks` | Get the current share price  |
+
+## :link: Used Ressources
+
+[DiscordJS](https://discord.com/developers/docs/intro)
+[Cron](https://www.npmjs.com/package/cron)
+[Puppeteer](https://www.npmjs.com/package/puppeteer)
+[Google Finance](https://www.google.com/finance)
