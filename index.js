@@ -27,7 +27,7 @@ function sendError(action, actionByMemberId, error) {
     )
     .setTimestamp()
     .setFooter("by DulliBot", "https://files.dulliag.de/web/images/logo.jpg");
-  client.channels.cache.get(channels.botDevelopment).send(`<@&${roles.coding}>`, errorMsg);
+  client.channels.cache.get(channels.botDevelopment).send(errorMsg);
 }
 
 function getStocks() {
@@ -54,19 +54,15 @@ function getStocks() {
         embed: {
           title: `${stock.short} | ${stock.company}`,
           color: 2664261,
-          timestamp: temp.date,
+          timestamp: new Date(),
           footer: {
             icon_url: "https://files.dulliag.de/web/images/logo.jpg",
             text: "by DulliBot & Stocks.JS",
           },
-          /*image: {
-            url:
-              "https://quickchart.io/chart?bkg=white&c=%7Btype%3A%27bar%27%2Cdata%3A%7Bdatasets%3A%5B%7Blabel%3A%27Open%27%2Cdata%3A%5B%24%7Btemp.open%7D%2C%24%7Btemp.high%7D%2C%24%7Btemp.low%7D%2C%24%7Btemp.close%7D%5D%7D%2C%7Blabel%3A%27High%27%2Cdata%3A%5B%24%7Btemp.high%7D%5D%7D%2C%7Blabel%3A%27Low%27%2Cdata%3A%5B%24%7Btemp.low%7D%5D%7D%2C%7Blabel%3A%27Closed%27%2Cdata%3A%5B%24%7Btemp.close%7D%5D%7D%5D%7D%2Coptions%3A%7Bplugins%3A%20%7Bdatalabels%3A%20%7Bdisplay%3A%20true%2Cfont%3A%7Bstyle%3A%20%27bold%27%2C%7D%2C%7D%2C%7D%2C%7D%7D",
-          },*/
           fields: [
             {
               name: "Details",
-              value: `:clock330: Eröffnet: ${temp.open} $\n:chart_with_upwards_trend: Hoch: ${temp.high} $\n:chart_with_downwards_trend: Tief: ${temp.low} $\n:clock10: Geschlossen: ${temp.close} $\n :bank: Volumen: ${temp.volume} $`,
+              value: `:clock330: Eröffnet: ${temp.open} $\n:chart_with_upwards_trend: Hoch: ${temp.high} $\n:chart_with_downwards_trend: Tief: ${temp.low} $\n:clock10: Geschlossen: ${temp.close} $`,
             },
           ],
         },
@@ -115,7 +111,7 @@ client.on("guildMemberAdd", (member) => {
         },
       };
       member.send(welcomeMsg);
-      welcomeChannel.send("", welcomeMsg);
+      welcomeChannel.send(welcomeMsg);
     })
     .catch((err) => {
       sendError("Willkommensnachricht schicken", err);
@@ -136,8 +132,8 @@ client.on("message", (msg) => {
   if (msg.author.bot == false) {
     if (msg.content.includes("!ban")) {
       // We only search for the Gründer-role bcause this should be the only role/groupd who should be allowed to ban member
+      var target = msg.mentions.users.first();
       if (msg.member.roles.cache.has(roles.gruender)) {
-        var target = msg.mentions.users.first();
         if (target) {
           target = msg.guild.members.cache.get(target.id);
           target.ban();
@@ -149,10 +145,11 @@ client.on("message", (msg) => {
         }
       } else {
         msg.reply("hat keine Rechte um zu bannen!");
+        sendError(msg.content, msg.author.id, `DulliBot: Hat versucht <@${target.id}> zu bannen!`);
       }
     } else if (msg.content.includes("!kick")) {
+      var target = msg.mentions.users.first();
       if (msg.member.roles.cache.has(roles.gruender)) {
-        var target = msg.mentions.users.first();
         if (target) {
           target = msg.guild.members.cache.get(target.id);
           target.kick();
@@ -164,6 +161,7 @@ client.on("message", (msg) => {
         }
       } else {
         msg.reply("hat keine Rechte um zu kicken!");
+        sendError(msg.content, msg.author.id, `DulliBot: Hat versucht <@${target.id}> zu kicken!`);
       }
     } else if (msg.content == "!clear") {
       if (msg.member.roles.cache.has(roles.gruender) || msg.member.roles.cache.has(roles.coding)) {
