@@ -1,9 +1,9 @@
 const Discord = require("discord.js");
 const { token, roles, channels, stocks } = require("./config.json");
 const roleClaim = require("./role-claim");
-const Stocks = require("stocks.js");
 const cron = require("cron").CronJob;
 const client = new Discord.Client();
+const puppeteer = require("puppeteer");
 
 function sendError(action, actionByMemberId, error) {
   const errorMsg = new Discord.MessageEmbed()
@@ -30,55 +30,118 @@ function sendError(action, actionByMemberId, error) {
   client.channels.cache.get(channels.botDevelopment).send(errorMsg);
 }
 
-function getStocks() {
+/**
+ * @param {object} stock Contains place, company & symbol
+ */
+async function getStock(stock) {
   let stockChannel = client.channels.cache.find((channel) => channel.id == channels.stocks);
-  const stockAPI = new Stocks("SYTCQBUIU44BX2G4");
-  stocks.forEach((stock) => {
-    new Promise((res, rej) => {
-      var result = stockAPI.timeSeries({
-        symbol: stock.short,
-        interval: "daily",
-        amount: 1,
-      });
-      res(result);
-    }).then((data) => {
-      let temp = {
-        open: data[0].open,
-        high: data[0].high,
-        low: data[0].low,
-        close: data[0].close,
-        volume: data[0].volume,
-        date: data[0].date,
-      };
-      const stockMsg = {
-        embed: {
-          title: `${stock.short} | ${stock.company}`,
-          color: 2664261,
-          timestamp: new Date(),
-          footer: {
-            icon_url: "https://files.dulliag.de/web/images/logo.jpg",
-            text: "by DulliBot & Stocks.JS",
-          },
-          fields: [
-            {
-              name: "Details",
-              value: `:clock330: Eröffnet: ${temp.open} $\n:chart_with_upwards_trend: Hoch: ${temp.high} $\n:chart_with_downwards_trend: Tief: ${temp.low} $\n:clock10: Geschlossen: ${temp.close} $`,
-            },
-          ],
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(`https://www.google.com/search?tbm=fin&q=${stock.place}:+${stock.symbol}`);
+
+  var [price] = await page.$x('//*[@class="IsqQVc NprOob XcVN5d"]');
+  var priceTxt = await price.getProperty("textContent");
+  var rawPriceTxt = await priceTxt.jsonValue();
+
+  var [currency] = await page.$x('//*[@class="knFDje"]');
+  var currencyTxt = await currency.getProperty("textContent");
+  var rawCurrencyTxt = await currencyTxt.jsonValue();
+
+  var [date] = await page.$x('//*[@jsname="ihIZgd"]');
+  var dateTxt = await date.getProperty("textContent");
+  var rawDateTxt = await dateTxt.jsonValue();
+
+  var [open] = await page.$x(
+    '//*[@id="knowledge-finance-wholepage__entity-summary"]/div/div/g-card-section[2]/div/div/div[1]/table/tbody/tr[1]/td[2]'
+  );
+  var openTxt = await open.getProperty("textContent");
+  var rawOpenTxt = await openTxt.jsonValue();
+
+  var [high] = await page.$x(
+    '//*[@id="knowledge-finance-wholepage__entity-summary"]/div/div/g-card-section[2]/div/div/div[1]/table/tbody/tr[2]/td[2]'
+  );
+  var highTxt = await high.getProperty("textContent");
+  var rawHighTxt = await highTxt.jsonValue();
+
+  var [low] = await page.$x(
+    '//*[@id="knowledge-finance-wholepage__entity-summary"]/div/div/g-card-section[2]/div/div/div[1]/table/tbody/tr[3]/td[2]'
+  );
+  var lowTxt = await low.getProperty("textContent");
+  var rawLowTxt = await lowTxt.jsonValue();
+
+  var [volume] = await page.$x(
+    '//*[@id="knowledge-finance-wholepage__entity-summary"]/div/div/g-card-section[2]/div/div/div[1]/table/tbody/tr[4]/td[2]'
+  );
+  var volumeTxt = await volume.getProperty("textContent");
+  var rawVolumeTxt = await volumeTxt.jsonValue();
+
+  const stockData = {
+    symbol: stock.symbol,
+    company: stock.company,
+    place: stock.place,
+    date: rawDateTxt,
+    currency: rawCurrencyTxt,
+    current: rawPriceTxt,
+    open: rawOpenTxt,
+    high: rawHighTxt,
+    low: rawLowTxt,
+    volume: rawVolumeTxt,
+  };
+
+  const msg = {
+    embed: {
+      title: `${stockData.place} | ${stockData.symbol} | ${stockData.company}`,
+      color: 2664261,
+      timestamp: stockData.date,
+      fields: [
+        {
+          name: "Details",
+          value: `:red_circle: Aktuell: ${
+            stockData.current + stockData.currency
+          }\n:clock330: Eröffnet: ${
+            stockData.open + stockData.currency
+          }\n:chart_with_upwards_trend: Hoch: ${
+            stockData.high + stockData.currency
+          }\n:chart_with_downwards_trend: Tief: ${
+            stockData.low + stockData.currency
+          }\n:bank: Marktkapital: ${stockData.volume + stockData.currency}`,
         },
-      };
-      stockChannel.send(stockMsg);
-    });
-  });
+      ],
+      footer: {
+        icon_url: "https://files.dulliag.de/web/images/logo.jpg",
+        text: "by DulliBot",
+      },
+    },
+  };
+  stockChannel.send(msg);
+
+  browser.close();
 }
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  sendError("Bot gestartet", "669622328325570571", "Der Bot wurde so eben gestartet");
   roleClaim(client); // TODO Create an own custom solution for this feature
-  var job = new cron("0 1 22 * * 0-5", function () {
-    getStocks();
+  const nasdaq = new cron("0 1 22 * * 0-5", function () {
+    for (const key in stocks) {
+      const stock = stocks[key];
+      if (stock.place == "NASDAQ") {
+        getStock(stock);
+      }
+    }
   });
-  job.start();
+
+  const fra = new cron("0 1 20 * * 0-5", function () {
+    for (const key in stocks) {
+      const stock = stocks[key];
+      if (stock.place == "FRA") {
+        getStock(stock);
+      }
+    }
+  });
+
+  fra.start();
+  nasdaq.start();
 });
 
 client.on("guildMemberAdd", (member) => {
@@ -131,7 +194,10 @@ client.on("message", (msg) => {
   // Only for messages written by an user
   if (msg.author.bot == false) {
     if (msg.content.includes("!ban")) {
-      // We only search for the Gründer-role bcause this should be the only role/groupd who should be allowed to ban member
+      /**
+       * !ban
+       */
+      // We only search for the Gründer-role bcause this should be the only role/group who should be allowed to ban member
       var target = msg.mentions.users.first();
       if (msg.member.roles.cache.has(roles.gruender)) {
         if (target) {
@@ -148,6 +214,9 @@ client.on("message", (msg) => {
         sendError(msg.content, msg.author.id, `DulliBot: Hat versucht <@${target.id}> zu bannen!`);
       }
     } else if (msg.content.includes("!kick")) {
+      /**
+       * !kick
+       */
       var target = msg.mentions.users.first();
       if (msg.member.roles.cache.has(roles.gruender)) {
         if (target) {
@@ -164,6 +233,9 @@ client.on("message", (msg) => {
         sendError(msg.content, msg.author.id, `DulliBot: Hat versucht <@${target.id}> zu kicken!`);
       }
     } else if (msg.content == "!clear") {
+      /**
+       * !clear
+       */
       if (msg.member.roles.cache.has(roles.gruender) || msg.member.roles.cache.has(roles.coding)) {
         msg.channel.messages.fetch().then((messages) => {
           msg.channel
@@ -182,7 +254,13 @@ client.on("message", (msg) => {
         msg.reply("hat keine Rechte zum aufräumen des Kanals!");
       }
     } else if (msg.content == "!stocks") {
-      getStocks();
+      /**
+       * !stocks
+       */
+      stocks.forEach((stock) => {
+        // getStocks(stock, "1min");
+        getStock(stock);
+      });
     } else if (msg.content.substring(0, 1) == "!") {
       // Send an message with an command-list
       // TODO Select command-list from command.json
