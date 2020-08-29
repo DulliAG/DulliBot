@@ -96,12 +96,16 @@ _**!!! There are all stocks from Google Finance supported !!!**_
 ## :gear: Hosting
 
 **Linux**
+
 _Make sure you have [cloned](#installation) the Repository before this steps_
 
 1. Run the command `bash createScreen.sh`
-   _NOTE: You need `screen` to run this SHELL-Script_
+
+
+_NOTE: Make sure you have `screen` installed or install it with `apt-get install screen`_
 
 ## :postal_horn: Commands
+
 
 _To execute an command you need to add the prefix `!`_
 
