@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">
-  DAG-Discord-Bot
+  DulliBot
 </h1>
 
 ## :rocket: Features
