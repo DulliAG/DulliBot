@@ -137,7 +137,7 @@ client.on("ready", () => {
     }
   });
 
-  const fra = new cron("0 1 20 * * 0-5", function () {
+  const fra = new cron("0 1 20 * * Monday-Friday", function () {
     for (const key in stocks) {
       const stock = stocks[key];
       if (stock.place == "FRA") {
