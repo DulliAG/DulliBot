@@ -5,7 +5,7 @@ const cron = require("cron").CronJob;
 const client = new Discord.Client();
 const puppeteer = require("puppeteer");
 
-function sendError(action, actionByMemberId, error) {
+function sendLog(action, actionByMemberId, error) {
   const errorMsg = new Discord.MessageEmbed()
     .setColor("#fd0061")
     .setTitle("Fehlermeldung")
@@ -120,30 +120,29 @@ async function getStock(stock) {
 
     browser.close();
   } catch (err) {
-    sendError("Aktienkurse abrufen", "669622328325570571", err);
+    sendLog("Aktienkurse abrufen", "669622328325570571", err);
   }
 }
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  // sendError("Bot gestartet", "669622328325570571", "Der Bot wurde so eben gestartet");
+  sendLog("Bot gestartet", "669622328325570571", "Der Bot wurde erfolgreich gestartet!");
   roleClaim(client); // TODO Create an own custom solution for this feature
-  const nasdaq = new cron("0 1 22 * * 0-5", function () {
-    for (const key in stocks) {
-      const stock = stocks[key];
+
+  const nasdaq = new cron("0 1 22 * * 1-5", () => {
+    stocks.map((stock) => {
       if (stock.place == "NASDAQ") {
         getStock(stock);
       }
-    }
+    });
   });
 
-  const fra = new cron("0 1 20 * * Monday-Friday", function () {
-    for (const key in stocks) {
-      const stock = stocks[key];
+  const fra = new cron("0 1 20 * * 1-5", () => {
+    stocks.map((stock) => {
       if (stock.place == "FRA") {
         getStock(stock);
       }
-    }
+    });
   });
 
   fra.start();
@@ -151,6 +150,7 @@ client.on("ready", () => {
 });
 
 client.on("guildMemberAdd", (member) => {
+  // Update the server statistics
   client.channels.cache
     .get(channels.stats.member)
     .setName(`Mitglieder: ${member.guild.members.cache.filter((m) => !m.user.bot).size}`);
@@ -158,8 +158,9 @@ client.on("guildMemberAdd", (member) => {
     .get(channels.stats.bots)
     .setName(`Bots: ${member.guild.members.cache.filter((m) => m.user.bot).size}`);
 
-  var role = member.guild.roles.cache.find((role) => role.id == roles.guest);
-  var welcomeChannel = client.channels.cache.find((channel) => channel.id == channels.welcome);
+  // Send an global welcome message to the server & via direct message
+  let role = member.guild.roles.cache.find((role) => role.id == roles.guest),
+    welcomeChannel = client.channels.cache.find((channel) => channel.id == channels.welcome);
   member.roles
     .add(role)
     .then(() => {
@@ -183,65 +184,105 @@ client.on("guildMemberAdd", (member) => {
       welcomeChannel.send(welcomeMsg);
     })
     .catch((err) => {
-      sendError("Willkommensnachricht schicken", err);
+      sendLog("Willkommensnachricht schicken", err);
     });
 });
 
 client.on("guildMemberRemove", (member) => {
+  // Update the server statistics
   client.channels.cache
     .get(channels.stats.member)
     .setName(`Mitglieder: ${member.guild.members.cache.filter((m) => !m.user.bot).size}`);
   client.channels.cache
     .get(channels.stats.bots)
     .setName(`Bots: ${member.guild.members.cache.filter((m) => m.user.bot).size}`);
+
+  // Send an global leave message
+  let welcomeChannel = client.channels.cache.find((channel) => channel.id == channels.welcome),
+    leaveMsg = {
+      embed: {
+        title: `Willkommen ${member.user.username},`,
+        description: `wir heißen dich auf dem Discord-Server der DulliAG herzlich willkommen. Für mehr Informationen über die DulliAG besuche doch unsere [Webseite](https://dulliag.de) und am besten schaust du dir mal unsere allgemeines Verhaltensregeln an.`,
+        color: 2664261,
+        timestamp: new Date(),
+        footer: {
+          icon_url: "https://files.dulliag.de/web/images/logo.jpg",
+          text: "by DulliBot",
+        },
+        author: {
+          name: member.user.username,
+          icon_url: member.avatarURL,
+        },
+      },
+    };
+  welcomeChannel.send(leaveMsg);
 });
 
 client.on("message", (msg) => {
   // Only for messages written by an user
   if (msg.author.bot == false) {
     if (msg.content.includes("!ban")) {
-      /**
-       * !ban
-       */
+      // !ban
       // We only search for the Gründer-role bcause this should be the only role/group who should be allowed to ban member
       var target = msg.mentions.users.first();
       if (msg.member.roles.cache.has(roles.gruender)) {
         if (target) {
           target = msg.guild.members.cache.get(target.id);
           target.ban();
-          msg.reply(`der Benutzer **${target.user.username}** wurde **permanent gebannt**!`);
-          // TODO Send an notification-message to the banned player
-          // TODO Send an log-message to the log-channel
+          msg.reply(`das Mitglied **${target.user.username}** wurde **permanent gebannt**!`);
+          sendLog(
+            msg.content,
+            msg.author.id,
+            `DulliBot: Das Mitglied **<@${target.user.username}>** wurde **permanent gebannt**!`
+          );
         } else {
-          msg.reply("der Benutzer existiert nicht!");
+          msg.reply(`das Mitglied **<@${target}>** existiert nicht!`);
+          sendLog(
+            msg.content,
+            msg.author.id,
+            `DulliBot: Hat versucht das Mitglied **<@${target}>** zu bannen!`
+          );
         }
       } else {
-        msg.reply("hat keine Rechte um zu bannen!");
-        sendError(msg.content, msg.author.id, `DulliBot: Hat versucht <@${target.id}> zu bannen!`);
+        msg.reply("hat keine Rechte um Mitglieder zu bannen!");
+        sendLog(
+          msg.content,
+          msg.author.id,
+          `DulliBot: Hat versucht das Mitglied **<@${target.id}>** zu bannen!`
+        );
       }
     } else if (msg.content.includes("!kick")) {
-      /**
-       * !kick
-       */
+      // !kick
       var target = msg.mentions.users.first();
       if (msg.member.roles.cache.has(roles.gruender)) {
         if (target) {
           target = msg.guild.members.cache.get(target.id);
           target.kick();
-          msg.reply(`der Benutzer **${target.user.username}** wurde **gekickt**!`);
+          msg.reply(`das Mitglied **${target.user.username}** wurde **gekickt**!`);
+          sendLog(
+            msg.content,
+            msg.author.id,
+            `DulliBot: Das Mitglied **<@${target.id}>** wurde gekickt!`
+          );
           // TODO Send an notification-message to the kicked player
-          // TODO Send an log-message to the log-channel
         } else {
-          msg.reply("der Benutzer existiert nicht!");
+          msg.reply(`das Mitglied **<@${target}>** existiert nicht!`);
+          sendLog(
+            msg.content,
+            msg.author.id,
+            `DulliBot: Hat versucht das Mitglied **<@${target}>** zu kicken!`
+          );
         }
       } else {
-        msg.reply("hat keine Rechte um zu kicken!");
-        sendError(msg.content, msg.author.id, `DulliBot: Hat versucht <@${target.id}> zu kicken!`);
+        msg.reply("hat keine Rechte um Mitglieder zu kicken!");
+        sendLog(
+          msg.content,
+          msg.author.id,
+          `DulliBot: Hat versucht das Mitglied **<@${target.id}>** zu kicken!`
+        );
       }
     } else if (msg.content == "!clear") {
-      /**
-       * !clear
-       */
+      //  !clear
       if (msg.member.roles.cache.has(roles.gruender) || msg.member.roles.cache.has(roles.coding)) {
         msg.channel.messages.fetch().then((messages) => {
           msg.channel
@@ -251,24 +292,21 @@ client.on("message", (msg) => {
             })
             .catch((err) => {
               msg.reply(
-                "der Befehl konnte nicht ausgeführt werden. Ein Fehlerbericht wurde erstellt!"
+                "Der Befehl konnte nicht ausgeführt werden. Ein Fehlerbericht wurde erstellt!"
               );
-              sendError(msg.content, msg.author.id, err);
+              sendLog(msg.content, msg.author.id, err);
             });
         });
       } else {
         msg.reply("hat keine Rechte zum aufräumen des Kanals!");
       }
     } else if (msg.content == "!stocks") {
-      /**
-       * !stocks
-       */
-      stocks.forEach((stock) => {
-        // getStocks(stock, "1min");
+      // !stocks
+      stocks.map((stock) => {
         getStock(stock);
       });
     } else if (msg.content.substring(0, 1) == "!") {
-      // Send an message with an command-list
+      // No command found
       // TODO Select command-list from command.json
       const errorMsg = new Discord.MessageEmbed()
         .setColor("#fd0061")
