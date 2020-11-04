@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { token, roles, channels, stocks } = require("./config.json");
+const { token, roles, channels, stocks, settings } = require("./config.json");
 const roleClaim = require("./role-claim");
 const cron = require("cron").CronJob;
 const client = new Discord.Client();
@@ -221,7 +221,8 @@ client.on("guildMemberRemove", (member) => {
 client.on("message", (msg) => {
   // Only for messages written by an user
   if (msg.author.bot == false) {
-    if (msg.content.includes("!ban")) {
+    let cmd = msg.content;
+    if (cmd.includes("!ban")) {
       // !ban
       // We only search for the Gründer-role bcause this should be the only role/group who should be allowed to ban member
       var target = msg.mentions.users.first();
@@ -251,7 +252,7 @@ client.on("message", (msg) => {
           `DulliBot: Hat versucht das Mitglied **<@${target.id}>** zu bannen!`
         );
       }
-    } else if (msg.content.includes("!kick")) {
+    } else if (cmd.includes("!kick")) {
       // !kick
       var target = msg.mentions.users.first();
       if (msg.member.roles.cache.has(roles.gruender)) {
@@ -281,7 +282,7 @@ client.on("message", (msg) => {
           `DulliBot: Hat versucht das Mitglied **<@${target.id}>** zu kicken!`
         );
       }
-    } else if (msg.content == "!clear") {
+    } else if (cmd == "!clear") {
       //  !clear
       if (msg.member.roles.cache.has(roles.gruender) || msg.member.roles.cache.has(roles.coding)) {
         msg.channel.messages.fetch().then((messages) => {
@@ -300,30 +301,30 @@ client.on("message", (msg) => {
       } else {
         msg.reply("hat keine Rechte zum aufräumen des Kanals!");
       }
-    } else if (msg.content == "!stocks") {
+    } else if (cmd == "!stocks") {
       // !stocks
       stocks.map((stock) => {
         getStock(stock);
       });
-    } else if (msg.content.substring(0, 1) == "!") {
-      // No command found
-      // TODO Select command-list from command.json
-      const errorMsg = new Discord.MessageEmbed()
-        .setColor("#fd0061")
-        .setTitle("Befehlsliste")
-        .addFields(
-          {
-            name: "Versuchter Befehl",
-            value: `${msg.content}`,
-          },
-          {
-            name: "Registrierte Befehle",
-            value: `!clear | Kanalnachrichten leeren\n!ban | Mitglied bannen\n!kick | Mitglied kicken\n!stocks | Aktienkurse abrufen`,
-          }
-        )
-        .setTimestamp()
-        .setFooter("by DulliBot", "https://files.dulliag.de/web/images/logo.jpg");
-      client.channels.cache.get(msg.channel.id).send(errorMsg);
+    } else {
+      if (!settings.whitelist.includes(cmd)) {
+        const errorMsg = new Discord.MessageEmbed()
+          .setColor("#fd0061")
+          .setTitle("Befehlsliste")
+          .addFields(
+            {
+              name: "Versuchter Befehl",
+              value: `${msg.content}`,
+            },
+            {
+              name: "Registrierte Befehle",
+              value: `!clear | Kanalnachrichten leeren\n!ban | Mitglied bannen\n!kick | Mitglied kicken\n!stocks | Aktienkurse abrufen\n!ama | Amazon Bot`,
+            }
+          )
+          .setTimestamp()
+          .setFooter("by DulliBot", "https://files.dulliag.de/web/images/logo.jpg");
+        client.channels.cache.get(msg.channel.id).send(errorMsg);
+      }
     }
   }
 });
