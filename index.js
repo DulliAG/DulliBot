@@ -4,6 +4,7 @@ const roleClaim = require("./role-claim");
 const cron = require("cron").CronJob;
 const client = new Discord.Client();
 const puppeteer = require("puppeteer");
+const os = require("os");
 
 function sendLog(action, actionByMemberId, error) {
   const errorMsg = new Discord.MessageEmbed()
@@ -35,10 +36,14 @@ function sendLog(action, actionByMemberId, error) {
  */
 async function getStock(stock) {
   try {
-    let stockChannel = client.channels.cache.find((channel) => channel.id == channels.stocks);
-    const browser = await puppeteer.launch();
-    //  Use this if u run the bot on linux
-    // const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+    let stockChannel = client.channels.cache.find((channel) => channel.id == channels.stocks),
+        browser;
+    
+    if (os.type().includes("WINDOWS")) {
+      browser = await puppeteer.launch();
+    } else {
+      browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+    }
     const page = await browser.newPage();
     await page.goto(`https://www.google.com/search?tbm=fin&q=${stock.place}:+${stock.symbol}`);
 
