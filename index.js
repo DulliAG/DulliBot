@@ -137,7 +137,7 @@ client.on("ready", () => {
   const nasdaq = new cron("0 1 22 * * 1-5", () => {
     stocks.map((stock) => {
       if (stock.place == "NASDAQ") {
-        getStock(stock);
+        getStock(stock).catch((err) => console.error("[DulliBot]", err));
       }
     });
   });
@@ -145,7 +145,7 @@ client.on("ready", () => {
   const fra = new cron("0 1 20 * * 1-5", () => {
     stocks.map((stock) => {
       if (stock.place == "FRA") {
-        getStock(stock);
+        getStock(stock).catch((err) => console.error("[DulliBot]", err));;
       }
     });
   });
