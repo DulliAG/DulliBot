@@ -37,13 +37,14 @@ function sendLog(action, actionByMemberId, error) {
 async function getStock(stock) {
   try {
     let stockChannel = client.channels.cache.find((channel) => channel.id == channels.stocks),
-        browser;
-    
-    if (os.type().includes("WINDOWS")) {
-      browser = await puppeteer.launch();
-    } else {
-      browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
-    }
+      browser;
+
+    // if (os.type().includes("WINDOWS")) {
+    //   browser = await puppeteer.launch();
+    // } else {
+    //   browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+    // }
+    browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
     const page = await browser.newPage();
     await page.goto(`https://www.google.com/search?tbm=fin&q=${stock.place}:+${stock.symbol}`);
 
@@ -145,7 +146,7 @@ client.on("ready", () => {
   const fra = new cron("0 1 20 * * 1-5", () => {
     stocks.map((stock) => {
       if (stock.place == "FRA") {
-        getStock(stock).catch((err) => console.error("[DulliBot]", err));;
+        getStock(stock).catch((err) => console.error("[DulliBot]", err));
       }
     });
   });
