@@ -52,42 +52,46 @@ _**!!! There are all stocks from Google Finance supported !!!**_
 ```
 {
   "token": "ENTER_BOT_TOKEN",
+  "clientId": "ENTER_CLIENT_ID",
+  "settings": {
+    "blacklist": [ENTER_ALL_BLACKLISTED_COMMANDS]
+  },
   "roles": {
-    "gruender": "ENTER_OWNER_ROLE",
-    "coding": "ENTER_DEVELOPER_ROLE",
-    "guest": "ENTER_GUEST_ROLE",
-    "realliferpg": "ENTER_ROLE_ID",
-    "clipperino": "ENTER_ROLE_ID",
-    "eft": "EMTER_ROLE_ID",
-    "minecraft": "ENTER_ROLE_ID"
+    "gruender": "ENTER_ROLE_ID",
+    "coding": "ENTER_ROLE_ID",
+    "sponsor": "ENTER_ROLE_ID",
+    "guest": "ENTER_ROLE_ID",
+    "rlrpg": "ENTER_ROLE_ID"
   },
   "channels": {
     "welcome": "ENTER_CHANNEL_ID",
     "roles": "ENTER_CHANNEL_ID",
-    "botDevelopment": "ENTER_CHANNEL_ID",
-    "stocks": "ENTER_CHANNEL_ID",
+    "logs": "ENTER_CHANNEL_ID",
     "stats": {
       "member": "ENTER_CHANNEL_ID",
       "bots": "ENTER_CHANNEL_ID"
     }
   },
-  "stocks": [
-    {
-      "place": "NASDAQ",
-      "company": "Tesla",
-      "symbol": "TSLA"
-    },
-    {
-      "place": "FRA",
-      "company": "Siemens",
-      "symbol": "SIE"
-    },
-    {
-      "place": "NASDAQ",
-      "company": "Microsoft",
-      "symbol": "MSFT"
-    }
-  ]
+  "rbr": {
+    "enabled": true,
+    "reactions": [
+      {
+        "id": "ENTER_ROLE_ID",
+        "name": "ENTER_TEXT",
+        "emoji": "ENTER_EMOJI_NAME"
+      }
+    ]
+  },
+  "stocks": {
+    "enabled": true,
+    "stocks": [
+      {
+        "place": "NASDAQ",
+        "company": "Tesla",
+        "symbol": "TSLA"
+      }
+    ]
+  }
 }
 ```
 
@@ -101,11 +105,9 @@ _Make sure you have [cloned](#installation) the Repository before this steps_
 
 1. Run the command `bash createScreen.sh`
 
-
 _NOTE: Make sure you have `screen` installed or install it with `apt-get install screen`_
 
 ## :postal_horn: Commands
-
 
 _To execute an command you need to add the prefix `!`_
 
