@@ -2,7 +2,8 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const cron = require("cron").CronJob;
 
-const { token, clientId, roles, channels, stocks, rbr, settings } = require("./config.json");
+const { token, clientId, roles, channels, stocks, arma, rbr, settings } = require("./config.json");
+const checkArmaUpdate = require("./functions/checkArmaUpdate");
 const memberCounter = require("./functions/memberCounter");
 const getStock = require("./functions/getStock");
 const roleClaim = require("./functions/roleClaim");
@@ -11,6 +12,13 @@ const sendLog = require("./functions/sendLog");
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   sendLog(client, "Bot starten", clientId, "Der Bot wurde erfolgreich gestartet!");
+
+  if (arma.enabled) {
+    const arma = new cron("*/15 * * * *", () => {
+      checkArmaUpdate(client, clientId);
+    });
+    arma.start();
+  }
 
   // Run role-by-reaction if it it enabled
   if (rbr.enabled) roleClaim(client, clientId);
