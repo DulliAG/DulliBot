@@ -1,4 +1,4 @@
 while true
-do 
+do
   npm start
 done
