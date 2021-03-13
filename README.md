@@ -63,6 +63,7 @@ _**!!! There are all stocks from Google Finance supported !!!**_
     "guest": "ENTER_ROLE_ID",
     "rlrpg": "ENTER_ROLE_ID"
   },
+  "arma": { "enabled": true, "current_version": "VERSION" },
   "channels": {
     "welcome": "ENTER_CHANNEL_ID",
     "roles": "ENTER_CHANNEL_ID",

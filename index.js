@@ -206,6 +206,10 @@ client.on("message", (msg) => {
             msg.reply(`ich laufe auf der Version ${version}!`);
             break;
 
+          case "aupdate":
+            checkArmaUpdate(client, clientId);
+            break;
+
           default:
             const errorMsg = new Discord.MessageEmbed()
               .setColor("#fd0061")
@@ -217,7 +221,7 @@ client.on("message", (msg) => {
                 },
                 {
                   name: "Registrierte Befehle",
-                  value: `!clear | Kanalnachrichten leeren\n!ban | Mitglied bannen\n!kick | Mitglied kicken\n!stocks | Aktienkurse abrufen\n`,
+                  value: `!clear | Kanalnachrichten leeren\n!ban | Mitglied bannen\n!kick | Mitglied kicken\n!stocks | Aktienkurse abrufen\n!version | Version anzeigen\n!aupdate | Prüfe ob ein neues ReallifeRPG Update zur Verfügung steht`,
                 }
               )
               .setTimestamp()

@@ -1,12 +1,14 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
+
 const fileName = "../config.json";
 const file = require(fileName);
-const { arma, channels } = require("../config.json");
+const { channels } = require(fileName);
 const sendLog = require("./sendLog");
 
 module.exports = async (client, clientId) => {
-  let lastCheckedVersion = arma.current_version;
+  const { arma } = require(fileName);
+  const lastCheckedVersion = arma.current_version;
   const response = await fetch("https://api.realliferpg.de/v1/changelog");
   const changelogs = await response.json();
   const newestChangelog = changelogs.data[0];
@@ -25,10 +27,11 @@ module.exports = async (client, clientId) => {
         ? updateRelease.getMinutes()
         : `0${updateRelease.getMinutes()}`,
   };
+
   if (lastCheckedVersion != newestChangelogVersion) {
     file.arma = { enabled: true, current_version: newestChangelogVersion };
     fs.writeFileSync("./config.json", JSON.stringify(file), function writeJSON(err) {
-      if (err) return console.log(err);
+      if (err) return console.error(err);
     });
     const updateChannel = client.channels.cache.find((channel) => channel.id == channels.arma);
     const updateMessage = {
@@ -43,6 +46,10 @@ module.exports = async (client, clientId) => {
         },
       },
     };
-    updateChannel.send(updateMessage).catch((err) => sendLog(client, "dass", clientId, err));
+    updateChannel
+      .send(updateMessage)
+      .catch((err) =>
+        sendLog(client, "Benachrichtigung für Arma Changelogs abschicken", clientId, err)
+      );
   }
 };
