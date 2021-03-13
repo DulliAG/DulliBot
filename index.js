@@ -3,6 +3,7 @@ const client = new Discord.Client();
 const cron = require("cron").CronJob;
 
 const { token, clientId, roles, channels, stocks, arma, rbr, settings } = require("./config.json");
+const { version } = require("./package.json");
 const checkArmaUpdate = require("./functions/checkArmaUpdate");
 const memberCounter = require("./functions/memberCounter");
 const getStock = require("./functions/getStock");
@@ -199,6 +200,10 @@ client.on("message", (msg) => {
             } else {
               msg.reply("hat keine Rechte zum aufräumen des Kanals!");
             }
+            break;
+
+          case "version":
+            msg.reply(`ich laufe auf der Version ${version}!`);
             break;
 
           default:
