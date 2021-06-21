@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const cron = require("cron").CronJob;
 
-const { clientId, settings, roles, arma, channels, roles_by_reaction } = require("./config.json");
+const { clientId, settings, roles, arma, channels, roles_by_reaction, commands } = require("./config.json");
 const { version } = require("./package.json");
 const checkArmaUpdate = require("./functions/checkArmaUpdate");
 const memberCounter = require("./functions/memberCounter");
@@ -12,6 +12,7 @@ const sendLog = require("./functions/sendLog");
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setActivity("!db for more");
   sendLog(client, "Bot starten", clientId, "Der Bot wurde erfolgreich gestartet!");
 
   // TODO Create own Bot for this feature
@@ -70,85 +71,16 @@ client.on("guildMemberRemove", (member) => {
 });
 
 client.on("message", (msg) => {
-  if (msg.content.substr(0, 1) == "!") {
+  if (msg.content.substr(0, 3) == "!db") {
     const cmd = msg.content,
-      cmdWithoutParams = cmd.split(/ /g)[0],
-      action = cmd.substr(1, cmd.length).split(/ /g)[0];
-    // TODO Register commands in config-file & add required permissions for each command, custom error messages
+      prefix = cmd.split(/ /g)[0],
+      action = cmd.split(/ /g)[1];
     // Check if the command is blacklisted and we don't want an event
-    if (!settings.blacklist.includes(cmdWithoutParams)) {
+    if (!settings.blacklist.includes(prefix)) {
       // Check if the sender is an user or an bot
       // Only when the sender is an user the event should be triggered
       if (!msg.author.bot) {
         switch (action) {
-          case "ban":
-            // We only search for the Gründer-role bcause this should be the only role/group who should be allowed to ban member
-            var target = msg.mentions.users.first();
-            if (msg.member.roles.cache.has(roles.gruender)) {
-              if (target) {
-                target = msg.guild.members.cache.get(target.id);
-                target.ban();
-                msg.reply(`das Mitglied **${target.user.username}** wurde **permanent gebannt**!`);
-                sendLog(
-                  client,
-                  msg.content,
-                  msg.author.id,
-                  `DulliBot: Das Mitglied **<@${target.user.username}>** wurde **permanent gebannt**!`
-                );
-              } else {
-                msg.reply(`das Mitglied **<@${target}>** existiert nicht!`);
-                sendLog(
-                  client,
-                  msg.content,
-                  msg.author.id,
-                  `DulliBot: Hat versucht das Mitglied **<@${target}>** zu bannen!`
-                );
-              }
-            } else {
-              msg.reply("hat keine Rechte um Mitglieder zu bannen!");
-              sendLog(
-                client,
-                msg.content,
-                msg.author.id,
-                `DulliBot: Hat versucht das Mitglied **<@${target.id}>** zu bannen!`
-              );
-            }
-            break;
-
-          case "kick":
-            var target = msg.mentions.users.first();
-            if (msg.member.roles.cache.has(roles.gruender)) {
-              if (target) {
-                target = msg.guild.members.cache.get(target.id);
-                target.kick();
-                msg.reply(`das Mitglied **${target.user.username}** wurde **gekickt**!`);
-                sendLog(
-                  client,
-                  msg.content,
-                  msg.author.id,
-                  `DulliBot: Das Mitglied **<@${target.id}>** wurde gekickt!`
-                );
-                // TODO Send an notification-message to the kicked player
-              } else {
-                msg.reply(`das Mitglied **<@${target}>** existiert nicht!`);
-                sendLog(
-                  client,
-                  msg.content,
-                  msg.author.id,
-                  `DulliBot: Hat versucht das Mitglied **<@${target}>** zu kicken!`
-                );
-              }
-            } else {
-              msg.reply("hat keine Rechte um Mitglieder zu kicken!");
-              sendLog(
-                client,
-                msg.content,
-                msg.author.id,
-                `DulliBot: Hat versucht das Mitglied **<@${target.id}>** zu kicken!`
-              );
-            }
-            break;
-
           case "clear":
             if (!msg.member.hasPermission("MANAGE_MESSAGES")) {
               msg.reply("du hast keine Rechte zum säubern des Kanals!");
@@ -182,6 +114,10 @@ client.on("message", (msg) => {
             break;
 
           default:
+            var txt = "";
+            commands.forEach((cmd) => {
+              txt += `${cmd.syntax} | ${cmd.description}\n`;
+            });
             const errorMsg = new Discord.MessageEmbed()
               .setColor("#fd0061")
               .setTitle("Befehle")
@@ -192,11 +128,11 @@ client.on("message", (msg) => {
                 },
                 {
                   name: "Registrierte Befehle",
-                  value: `!clear | Kanalnachrichten leeren\n!ban | Mitglied bannen\n!kick | Mitglied kicken\n!stocks | Aktienkurse abrufen\n!version | Version anzeigen\n!aupdate | Prüfe ob ein neues ReallifeRPG Update zur Verfügung steht`,
+                  value: txt
                 }
               )
               .setTimestamp()
-              .setFooter("by DulliBot", "https://files.dulliag.de/web/images/logo.jpg");
+              .setFooter("by DulliBot", client.user.displayAvatarURL());
             client.channels.cache.get(msg.channel.id).send(errorMsg);
             break;
         }

@@ -7,7 +7,7 @@ const { channels } = require(fileName);
 const sendLog = require("./sendLog");
 
 module.exports = async (client, clientId) => {
-  const { arma } = require(fileName);
+  const { arma, roles } = require(fileName);
   const lastCheckedVersion = arma.current_version;
   const response = await fetch("https://api.realliferpg.de/v1/changelog");
   const changelogs = await response.json();
@@ -35,6 +35,7 @@ module.exports = async (client, clientId) => {
     });
     const updateChannel = client.channels.cache.find((channel) => channel.id == channels.arma);
     const updateMessage = {
+      content: `<@&${roles.rlrpg}>`,
       embed: {
         title: `Changelog v${newestChangelogVersion}`,
         description: `Es gibt einen neuen Changelog!\n Das Update steht im Launcher am **${releaseDate.day}.${releaseDate.month}.${releaseDate.year} ab ${releaseDate.hours}:${releaseDate.minutes} Uhr** zum herunterladen bereit und ist **${newestChangelog.size}** groß.`,
