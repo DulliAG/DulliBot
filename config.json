@@ -1,6 +1,6 @@
 {
   "clientId": "814289151250923551",
-  "settings": { "blacklist": ["!ama", "!st"] },
+  "settings": { "blacklist": ["!ama", "!st", "!sb"] },
   "roles": {
     "gruender": "812142679906451527",
     "coding": "812142714652983307",
