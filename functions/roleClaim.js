@@ -2,42 +2,65 @@
  * Credits goes to Worn Off Keys
  * https://www.youtube.com/watch?v=bJwPYCy17G4
  */
-const { channels, rbr } = require("../config.json");
-const firstMessage = require("./first-message");
+const { channels, roles_by_reaction } = require("../config.json");
+
+const addReaction = (message, reactions) => {
+  message.react(reactions[0]);
+  reactions.shift(); // remove item from current list
+  if (reactions.length > 0) {
+    setTimeout(() => addReaction(message, reactions), 750);
+  }
+};
+
+const firstMessage = async (client, channelId, text, reactions = []) => {
+  const channel = await client.channels.fetch(channelId);
+
+  channel.messages.fetch().then((messages) => {
+    // Check if there was already send an message to react
+    // If not the bot will send a message for the users to react
+    // If there is already an message the bot will listen for reactions on the first message and automaticlly adding missing roles
+    if (messages.size === 0) {
+      channel.send(text).then((message) => {
+        addReaction(message, reactions);
+      });
+    } else {
+      // If there already is an message the user will
+      for (const message of messages) {
+        message[1].edit(text);
+        addReaction(message[1], reactions);
+      }
+    }
+  });
+};
 
 module.exports = (client, botId) => {
-  const getEmoji = (emojiName) => client.emojis.cache.find((emoji) => emoji.name === emojiName);
+  const getCustomEmoji = (emojiName) =>
+    client.emojis.cache.find((emoji) => emoji.name === emojiName);
+  const reactions = [];
+  var emojis = roles_by_reaction.reactions,
+    messageText = "```diff\n+ Wähle deine Rollen aus!```\n";
 
-  let emojis = {};
-  rbr.reactions.map((reaction) => {
-    emojis[reaction.emoji] = reaction.name;
+  emojis.forEach((emoji) => {
+    const customEmoji = getCustomEmoji(emoji.emoji);
+    reactions.push(customEmoji);
+
+    const roleName = emoji.name;
+    messageText += `${customEmoji} ${roleName}\n`;
   });
 
-  const reactions = [];
-
-  let emojiText = "```diff\n+ Wähle deine Rollen aus!```\n";
-  for (const key in emojis) {
-    const emoji = getEmoji(key);
-    reactions.push(emoji);
-
-    const role = emojis[key];
-    emojiText += `${emoji} ${role}\n`;
-  }
-
-  firstMessage(client, channels.roles, emojiText, reactions);
+  firstMessage(client, channels.roles, messageText, reactions);
 
   const handleReaction = (reaction, member, add) => {
-    // Check if the reaction is made by an actual member
+    // Check if the message interaction was triggered by an an actual user and not by an registered bot
     if (member.id !== botId) {
-      console.log("REACTION", member);
       const emoji = reaction._emoji.name;
       const { guild } = reaction.message;
       const mem = guild.members.cache.find((mem) => mem.id === member.id);
       if (add) {
-        const match = rbr.reactions.filter((reaction) => reaction.emoji === emoji)[0];
+        const match = roles_by_reaction.reactions.filter((reaction) => reaction.emoji === emoji)[0];
         mem.roles.add(match.id);
       } else {
-        const match = rbr.reactions.filter((reaction) => reaction.emoji === emoji)[0];
+        const match = roles_by_reaction.reactions.filter((reaction) => reaction.emoji === emoji)[0];
         mem.roles.remove(match.id);
       }
     }

@@ -1,12 +1,12 @@
+require("dotenv").config();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const cron = require("cron").CronJob;
 
-const { token, clientId, roles, channels, stocks, arma, rbr, settings } = require("./config.json");
+const { clientId, settings, roles, arma, channels, roles_by_reaction } = require("./config.json");
 const { version } = require("./package.json");
 const checkArmaUpdate = require("./functions/checkArmaUpdate");
 const memberCounter = require("./functions/memberCounter");
-const getStock = require("./functions/getStock");
 const roleClaim = require("./functions/roleClaim");
 const sendLog = require("./functions/sendLog");
 
@@ -14,6 +14,7 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   sendLog(client, "Bot starten", clientId, "Der Bot wurde erfolgreich gestartet!");
 
+  // TODO Create own Bot for this feature
   if (arma.enabled) {
     const arma = new cron("*/15 * * * *", () => {
       checkArmaUpdate(client, clientId);
@@ -22,28 +23,8 @@ client.on("ready", () => {
   }
 
   // Run role-by-reaction if it it enabled
-  if (rbr.enabled) roleClaim(client, clientId);
-
-  // Run stocks if they are enabled
-  if (stocks.enabled) {
-    const nasdaq = new cron("0 1 22 * * 1-5", () => {
-      stocks.map((stock) => {
-        if (stock.place == "NASDAQ") {
-          getStock(client, channels.stocks, stock, clientId);
-          getStock(stock).catch((err) => console.error("[DulliBot]", err));
-        }
-      });
-    });
-    const fra = new cron("0 1 20 * * 1-5", () => {
-      stocks.map((stock) => {
-        if (stock.place == "FRA") {
-          getStock(client, channels.stocks, stock, clientId);
-          getStock(stock).catch((err) => console.error("[DulliBot]", err));
-        }
-      });
-    });
-    fra.start();
-    nasdaq.start();
+  if (roles_by_reaction.enabled) {
+    roleClaim(client, clientId);
   }
 });
 
@@ -168,38 +149,28 @@ client.on("message", (msg) => {
             }
             break;
 
-          case "stocks":
-            // Check if stocks are enabled
-            if (stocks.enabled) {
-              stocks.stocks.map((stock) => {
-                getStock(client, msg.channel.id, stock, clientId);
-              });
-            } else {
-              msg.reply(" Aktien wurden nicht aktiviert!");
-            }
-            break;
-
           case "clear":
-            if (
-              msg.member.roles.cache.has(roles.gruender) ||
-              msg.member.roles.cache.has(roles.coding)
-            ) {
-              msg.channel.messages.fetch().then((messages) => {
-                msg.channel
-                  .bulkDelete(messages)
-                  .then(() => {
-                    msg.reply("hat den Kanal aufgeräumt");
-                  })
-                  .catch((err) => {
-                    msg.reply(
-                      "Der Befehl konnte nicht ausgeführt werden. Ein Fehlerbericht wurde erstellt!"
-                    );
-                    sendLog(client, msg.content, msg.author.id, err);
-                  });
-              });
-            } else {
-              msg.reply("hat keine Rechte zum aufräumen des Kanals!");
+            if (!msg.member.hasPermission("MANAGE_MESSAGES")) {
+              msg.reply("du hast keine Rechte zum säubern des Kanals!");
+              return;
             }
+
+            msg.channel.messages.fetch().then((messages) => {
+              msg.channel
+                .bulkDelete(
+                  messages,
+                  true /*filter old messages means only messages within the last 14 days are gonna get removed*/
+                )
+                .then(() => {
+                  msg.reply("hat den Kanal aufgeräumt");
+                })
+                .catch((err) => {
+                  msg.reply(
+                    "Der Befehl konnte nicht ausgeführt werden. Ein Fehlerbericht wurde erstellt!"
+                  );
+                  sendLog(client, msg.content, msg.author.id, err);
+                });
+            });
             break;
 
           case "version":
@@ -234,4 +205,4 @@ client.on("message", (msg) => {
   }
 });
 
-client.login(token);
+client.login(process.env.TOKEN);

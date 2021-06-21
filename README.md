@@ -45,58 +45,15 @@ _**!!! Make sure you have registered an Discord-Bot !!!**_
 
 3. Install the required dependencies `npm install`
 
-4. Create an config.json like this
-
-_**!!! There are all stocks from Google Finance supported !!!**_
+4. Create an .env-file containing the Discord bot token
 
 ```
-{
-  "token": "ENTER_BOT_TOKEN",
-  "clientId": "ENTER_CLIENT_ID",
-  "settings": {
-    "blacklist": [ENTER_ALL_BLACKLISTED_COMMANDS]
-  },
-  "roles": {
-    "gruender": "ENTER_ROLE_ID",
-    "coding": "ENTER_ROLE_ID",
-    "sponsor": "ENTER_ROLE_ID",
-    "guest": "ENTER_ROLE_ID",
-    "rlrpg": "ENTER_ROLE_ID"
-  },
-  "arma": { "enabled": true, "current_version": "VERSION" },
-  "channels": {
-    "welcome": "ENTER_CHANNEL_ID",
-    "roles": "ENTER_CHANNEL_ID",
-    "logs": "ENTER_CHANNEL_ID",
-    "stats": {
-      "member": "ENTER_CHANNEL_ID",
-      "bots": "ENTER_CHANNEL_ID"
-    }
-  },
-  "rbr": {
-    "enabled": true,
-    "reactions": [
-      {
-        "id": "ENTER_ROLE_ID",
-        "name": "ENTER_TEXT",
-        "emoji": "ENTER_EMOJI_NAME"
-      }
-    ]
-  },
-  "stocks": {
-    "enabled": true,
-    "stocks": [
-      {
-        "place": "NASDAQ",
-        "company": "Tesla",
-        "symbol": "TSLA"
-      }
-    ]
-  }
-}
+TOKEN=DISCORD_BOT_TOKEN
 ```
 
-5. Now you can follow the [Hosting](#hosting) steps
+5. Update the existing [config.json](./src/config.json)
+
+6. Now you can follow the [Hosting](#hosting) steps
 
 ## :gear: Hosting
 
@@ -112,16 +69,13 @@ _NOTE: Make sure you have `screen` installed or install it with `apt-get install
 
 _To execute an command you need to add the prefix `!`_
 
-| Command  | Action                       |
-| -------- | ---------------------------- |
-| `clear`  | Deletes all channel-messages |
-| `ban`    | Ban an player                |
-| `kick`   | Kick an player               |
-| `stocks` | Get the current share price  |
+| Command | Action                       |
+| ------- | ---------------------------- |
+| `clear` | Deletes all channel-messages |
+| `ban`   | Ban an player                |
+| `kick`  | Kick an player               |
 
 ## :link: Used Ressources
 
 [DiscordJS](https://discord.com/developers/docs/intro)
 [Cron](https://www.npmjs.com/package/cron)
-[Puppeteer](https://www.npmjs.com/package/puppeteer)
-[Google Finance](https://www.google.com/finance)
