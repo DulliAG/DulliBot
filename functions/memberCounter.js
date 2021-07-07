@@ -1,5 +1,11 @@
+const Discord = require("discord.js");
 const { channels } = require("../config.json");
 
+/**
+ * @param {Discord.Client} client
+ * @param {Discord.GuildMember} member
+ * @returns {void}
+ */
 module.exports = (client, member) => {
   client.channels.cache
     .get(channels.stats.member)

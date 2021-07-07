@@ -1,1 +1,49 @@
-{"clientId":"814289151250923551","settings":{"blacklist":["!ama","!st","!sb"]},"roles":{"gruender":"812142679906451527","coding":"812142714652983307","sponsor":"812544365498859554","guest":"812142868780417045","rlrpg":"812142980806737930"},"roles_by_reaction":{"enabled":true,"reactions":[{"id":"812142980806737930","name":"ReallifeRPG","emoji":"rlrpg"},{"id":"851979261421158451","name":"Stocks","emoji":"stocks"},{"id":"812143019082907679","name":"EFT","emoji":"eft"},{"id":"834100754511298650","name":"Auktionshaus","emoji":"auctions"},{"id":"812142714652983307","name":"Coding","emoji":"blobbo"}]},"arma":{"enabled":true,"current_version":"1.18.1"},"channels":{"welcome":"812142474038476812","roles":"812142530413068298","logs":"812550434669068328","arma":"814828181739274241","stats":{"member":"812704239159083049","bots":"812704297719824414"}},"commands":[{"syntax":"!db clear","description":"Säubern eines Kanals"},{"syntax":"!db version","description":"Aktuelle Version abfragen"},{"syntax":"!db aupdate","description":"Prüfen ob ein neues ReallifeRPG Mod-Update zur Verfügung steht"}]}
+{
+  "bot": {
+    "client_id": "814289151250923551",
+    "token": "DONT_ENTER_HERE_ANYMORE",
+    "activity": "!db for more"
+  },
+  "logs": {
+    "colors": {
+      "success": 2664261,
+      "information": 38399,
+      "warning": 16738816,
+      "error": 16711680
+    }
+  },
+  "commands": {
+    "prefix": "!db",
+    "blacklist": ["!ama", "!st", "!sb"]
+  },
+  "clientId": "814289151250923551",
+  "roles": {
+    "rlrpg": "812142980806737930",
+    "guest": "812142868780417045",
+    "sponsor": "812544365498859554",
+    "coding": "812142714652983307",
+    "developer": "812142714652983307",
+    "admin": "857953483834523698",
+    "owner": "812142679906451527",
+    "gruender": "812142679906451527"
+  },
+  "roles_by_reaction": {
+    "enabled": true,
+    "reactions": [
+      { "id": "861666991650504714", "name": "Twitch", "emoji": "twitch" },
+      { "id": "812142980806737930", "name": "ReallifeRPG", "emoji": "rlrpg" },
+      { "id": "851979261421158451", "name": "Stocks", "emoji": "stonks" },
+      { "id": "812143019082907679", "name": "EFT", "emoji": "escape" },
+      { "id": "834100754511298650", "name": "Auktionshaus", "emoji": "achammer" },
+      { "id": "812142714652983307", "name": "Coding", "emoji": "vscode" }
+    ]
+  },
+  "arma": { "enabled": true, "current_version": "1.18.3" },
+  "channels": {
+    "welcome": "812142474038476812",
+    "roles": "812142530413068298",
+    "logs": "812550434669068328",
+    "arma": "814828181739274241",
+    "stats": { "member": "812704239159083049", "bots": "812704297719824414" }
+  }
+}

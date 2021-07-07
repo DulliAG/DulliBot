@@ -1,12 +1,17 @@
+const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const fs = require("fs");
 
 const fileName = "../config.json";
 const file = require(fileName);
-const { channels } = require(fileName);
-const sendLog = require("./sendLog");
+const { bot, channels } = require(fileName);
+const helper = require("../helper");
 
-module.exports = async (client, clientId) => {
+/**
+ * @param {Discord.Client} client
+ * @returns {Promise<void>}
+ */
+module.exports = async (client) => {
   const { arma, roles } = require(fileName);
   const lastCheckedVersion = arma.current_version;
   const response = await fetch("https://api.realliferpg.de/v1/changelog");
@@ -28,29 +33,42 @@ module.exports = async (client, clientId) => {
         : `0${updateRelease.getMinutes()}`,
   };
 
-  if (lastCheckedVersion != newestChangelogVersion) {
-    file.arma = { enabled: true, current_version: newestChangelogVersion };
-    fs.writeFileSync("./config.json", JSON.stringify(file), function writeJSON(err) {
-      if (err) return console.error(err);
-    });
-    const updateChannel = client.channels.cache.find((channel) => channel.id == channels.arma);
-    const updateMessage = {
-      content: `<@&${roles.rlrpg}>`,
-      embed: {
-        title: `Changelog v${newestChangelogVersion}`,
-        description: `Es gibt einen neuen Changelog!\n Das Update steht im Launcher am **${releaseDate.day}.${releaseDate.month}.${releaseDate.year} ab ${releaseDate.hours}:${releaseDate.minutes} Uhr** zum herunterladen bereit und ist **${newestChangelog.size}** groß.`,
-        color: 2664261,
-        timestamp: new Date(),
-        footer: {
-          icon_url: "https://files.dulliag.de/web/images/logo.jpg",
-          text: "by DulliBot",
-        },
+  // Check if there is a new version avaiable
+  helper.log("Checking for new ReallifeRPG mod version...");
+  if (lastCheckedVersion === newestChangelogVersion) return;
+
+  file.arma = { enabled: true, current_version: newestChangelogVersion };
+  fs.writeFileSync("./config.json", JSON.stringify(file), function writeJSON(err) {
+    if (err) return console.error(err);
+  });
+  const updateChannel = client.channels.cache.find((channel) => channel.id == channels.arma);
+  const updateMessage = {
+    content: `<@&${roles.rlrpg}>`,
+    embed: {
+      title: `Changelog v${newestChangelogVersion}`,
+      description: `Es gibt einen neuen Changelog!\n Das Update steht im Launcher am **${releaseDate.day}.${releaseDate.month}.${releaseDate.year} ab ${releaseDate.hours}:${releaseDate.minutes} Uhr** zum herunterladen bereit und ist **${newestChangelog.size}** groß.`,
+      color: 2664261,
+      timestamp: new Date(),
+      footer: {
+        icon_url: "https://files.dulliag.de/web/images/logo.jpg",
+        text: "by DulliBot",
       },
-    };
-    updateChannel
-      .send(updateMessage)
-      .catch((err) =>
-        sendLog(client, "Benachrichtigung für Arma Changelogs abschicken", clientId, err)
+    },
+  };
+  updateChannel
+    .send(updateMessage)
+    .then(() =>
+      helper.log("Benachrichtigung für Version '" + newestChangelogVersion + "' wurde verschickt!")
+    )
+    .catch((err) => {
+      helper.error("Benachrichtigung für Arma Changelogs abschicken. Grund: " + err);
+      helper.sendEmbedLog(
+        client,
+        channels.logs,
+        "error",
+        bot.client_id,
+        "RLRPG Benachrichtigung",
+        "Die Updatebenachrichtigung konnte nicht verschickt werden! Grund: " + err
       );
-  }
+    });
 };

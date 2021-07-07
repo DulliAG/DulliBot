@@ -2,8 +2,14 @@
  * Credits goes to Worn Off Keys
  * https://www.youtube.com/watch?v=bJwPYCy17G4
  */
+const Discord = require("discord.js");
 const { channels, roles_by_reaction } = require("../config.json");
 
+/**
+ * @param {Discord.Message} message
+ * @param {string{}} reactions
+ * @returns {void}
+ */
 const addReaction = (message, reactions) => {
   message.react(reactions[0]);
   reactions.shift(); // remove item from current list
@@ -12,6 +18,14 @@ const addReaction = (message, reactions) => {
   }
 };
 
+/**
+ *
+ * @param {Discord.Client} client
+ * @param {string} channelId
+ * @param {string} text
+ * @param {string[]} reactions
+ * @returns {Promise<void>}
+ */
 const firstMessage = async (client, channelId, text, reactions = []) => {
   const channel = await client.channels.fetch(channelId);
 
@@ -33,6 +47,11 @@ const firstMessage = async (client, channelId, text, reactions = []) => {
   });
 };
 
+/**
+ * @param {Discord.Client} client
+ * @param {string} botId
+ * @returns {void}
+ */
 module.exports = (client, botId) => {
   const getCustomEmoji = (emojiName) =>
     client.emojis.cache.find((emoji) => emoji.name === emojiName);
@@ -50,31 +69,35 @@ module.exports = (client, botId) => {
 
   firstMessage(client, channels.roles, messageText, reactions);
 
+  /**
+   * @param {*} reaction
+   * @param {Discord.GuildMember} member
+   * @param {boolean} add
+   * @returns {void}
+   */
   const handleReaction = (reaction, member, add) => {
     // Check if the message interaction was triggered by an an actual user and not by an registered bot
-    if (member.id !== botId) {
-      const emoji = reaction._emoji.name;
-      const { guild } = reaction.message;
-      const mem = guild.members.cache.find((mem) => mem.id === member.id);
-      if (add) {
-        const match = roles_by_reaction.reactions.filter((reaction) => reaction.emoji === emoji)[0];
-        mem.roles.add(match.id);
-      } else {
-        const match = roles_by_reaction.reactions.filter((reaction) => reaction.emoji === emoji)[0];
-        mem.roles.remove(match.id);
-      }
+    if (member.id === botId) return;
+
+    const emoji = reaction._emoji.name;
+    const { guild } = reaction.message;
+    const mem = guild.members.cache.find((mem) => mem.id === member.id);
+    if (add) {
+      const match = roles_by_reaction.reactions.filter((reaction) => reaction.emoji === emoji)[0];
+      mem.roles.add(match.id);
+    } else {
+      const match = roles_by_reaction.reactions.filter((reaction) => reaction.emoji === emoji)[0];
+      mem.roles.remove(match.id);
     }
   };
 
   client.on("messageReactionAdd", (reaction, member) => {
-    if (reaction.message.channel.id == channels.roles && !member.bot) {
+    if (reaction.message.channel.id == channels.roles && !member.bot)
       handleReaction(reaction, member, true);
-    }
   });
 
   client.on("messageReactionRemove", (reaction, member) => {
-    if (reaction.message.channel.id == channels.roles && !member.bot) {
+    if (reaction.message.channel.id == channels.roles && !member.bot)
       handleReaction(reaction, member, false);
-    }
   });
 };
