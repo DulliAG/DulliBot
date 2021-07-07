@@ -5,7 +5,7 @@ const fs = require("fs");
 const fileName = "../config.json";
 const file = require(fileName);
 const { bot, channels } = require(fileName);
-const helper = require("../helper");
+const helper = require("@dulliag/discord-helper");
 
 /**
  * @param {Discord.Client} client

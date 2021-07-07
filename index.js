@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const cron = require("cron").CronJob;
 
-const helper = require("./helper");
+const helper = require("@dulliag/discord-helper");
 const {
   bot,
   commands,
