@@ -35,7 +35,8 @@
       { "id": "851979261421158451", "name": "Stocks", "emoji": "stonks" },
       { "id": "812143019082907679", "name": "EFT", "emoji": "escape" },
       { "id": "834100754511298650", "name": "Auktionshaus", "emoji": "achammer" },
-      { "id": "812142714652983307", "name": "Coding", "emoji": "vscode" }
+      { "id": "812142714652983307", "name": "Coding", "emoji": "vscode" },
+      { "id": "886195697894981632", "name": "New World", "emoji": "newworld" }
     ]
   },
   "arma": { "enabled": true, "current_version": "1.18.3" },
