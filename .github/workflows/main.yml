@@ -4,7 +4,7 @@ name: 🚀 Deploy DulliBot
 on: 
   push:
     branches:
-      - main
+      - master
 jobs:
   web-deploy:
     name: 🎉 Deploy
