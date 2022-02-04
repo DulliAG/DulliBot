@@ -5,17 +5,9 @@
     "activity": "!db for more"
   },
   "logs": {
-    "colors": {
-      "success": 2664261,
-      "information": 38399,
-      "warning": 16738816,
-      "error": 16711680
-    }
+    "colors": { "success": 2664261, "information": 38399, "warning": 16738816, "error": 16711680 }
   },
-  "commands": {
-    "prefix": "!db",
-    "blacklist": ["!ama", "!st", "!sb"]
-  },
+  "commands": { "prefix": "!db", "blacklist": ["!ama", "!st", "!sb"] },
   "clientId": "814289151250923551",
   "roles": {
     "rlrpg": "812142980806737930",
@@ -39,12 +31,13 @@
       { "id": "886195697894981632", "name": "New World", "emoji": "newworld" }
     ]
   },
-  "arma": { "enabled": true, "current_version": "1.18.3" },
+  "arma": { "enabled": true, "current_version": "1.19.6" },
   "channels": {
     "welcome": "812142474038476812",
     "roles": "812142530413068298",
     "logs": "812550434669068328",
     "arma": "814828181739274241",
     "stats": { "member": "812704239159083049", "bots": "812704297719824414" }
-  }
+  },
+  "auto_publish": { "enabled": true, "categories": ["814828011580555265"] }
 }

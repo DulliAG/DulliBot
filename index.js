@@ -12,6 +12,7 @@ const {
   arma,
   channels,
   roles_by_reaction,
+  auto_publish,
 } = require('./config.json');
 const { version } = require('./package.json');
 const checkArmaUpdate = require('./functions/checkArmaUpdate');
@@ -57,6 +58,21 @@ client.on('guildMemberRemove', (member) => {
 });
 
 client.on('messageCreate', (msg) => {
+  // Listen for news auto-publishing
+  if (
+    auto_publish.enabled &&
+    msg.channel.type == 'GUILD_NEWS' &&
+    auto_publish.categories.includes(msg.channel.parentId) &&
+    msg.crosspostable
+  ) {
+    msg.crosspost().then(() => {
+      if (PRODUCTION) console.log('CREATE LOG');
+      helper.log(`Published message in '${msg.channel.name}'!`);
+    });
+    return;
+  }
+
+  // Listen for commands
   if (helper.isBot(msg.member)) return;
 
   if (msg.content.substring(0, commands.prefix.length) !== commands.prefix) return;
