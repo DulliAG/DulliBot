@@ -2,8 +2,8 @@
  * Credits goes to Worn Off Keys
  * https://www.youtube.com/watch?v=bJwPYCy17G4
  */
-const Discord = require("discord.js");
-const { channels, roles_by_reaction } = require("../config.json");
+const Discord = require('discord.js');
+const { channels, roles_by_reaction } = require('../config.json');
 
 /**
  * @param {Discord.Message} message
@@ -57,7 +57,7 @@ module.exports = (client, botId) => {
     client.emojis.cache.find((emoji) => emoji.name === emojiName);
   const reactions = [];
   var emojis = roles_by_reaction.reactions,
-    messageText = "```diff\n+ Wähle deine Rollen aus!```\n";
+    messageText = '```diff\n+ Wähle deine Rollen aus!```\n';
 
   emojis.forEach((emoji) => {
     const customEmoji = getCustomEmoji(emoji.emoji);
@@ -91,12 +91,12 @@ module.exports = (client, botId) => {
     }
   };
 
-  client.on("messageReactionAdd", (reaction, member) => {
+  client.on('messageReactionAdd', (reaction, member) => {
     if (reaction.message.channel.id == channels.roles && !member.bot)
       handleReaction(reaction, member, true);
   });
 
-  client.on("messageReactionRemove", (reaction, member) => {
+  client.on('messageReactionRemove', (reaction, member) => {
     if (reaction.message.channel.id == channels.roles && !member.bot)
       handleReaction(reaction, member, false);
   });

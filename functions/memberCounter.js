@@ -1,5 +1,5 @@
-const Discord = require("discord.js");
-const { channels } = require("../config.json");
+const Discord = require('discord.js');
+const { channels } = require('../config.json');
 
 /**
  * @param {Discord.Client} client

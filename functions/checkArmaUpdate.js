@@ -1,11 +1,11 @@
-const Discord = require("discord.js");
-const fetch = require("node-fetch");
-const fs = require("fs");
+const Discord = require('discord.js');
+const fetch = require('node-fetch');
+const fs = require('fs');
 
-const fileName = "../config.json";
+const fileName = '../config.json';
 const file = require(fileName);
 const { bot, channels } = require(fileName);
-const helper = require("@dulliag/discord-helper");
+const helper = require('@dulliag/discord-helper');
 
 /**
  * @param {Discord.Client} client
@@ -14,7 +14,7 @@ const helper = require("@dulliag/discord-helper");
 module.exports = async (client) => {
   const { arma, roles } = require(fileName);
   const lastCheckedVersion = arma.current_version;
-  const response = await fetch("https://api.realliferpg.de/v1/changelog");
+  const response = await fetch('https://api.realliferpg.de/v1/changelog');
   const changelogs = await response.json();
   const newestChangelog = changelogs.data[0];
   const newestChangelogVersion = newestChangelog.version;
@@ -34,11 +34,11 @@ module.exports = async (client) => {
   };
 
   // Check if there is a new version avaiable
-  helper.log("Checking for new ReallifeRPG mod version...");
+  helper.log('Checking for new ReallifeRPG mod version...');
   if (lastCheckedVersion === newestChangelogVersion) return;
 
   file.arma = { enabled: true, current_version: newestChangelogVersion };
-  fs.writeFileSync("./config.json", JSON.stringify(file), function writeJSON(err) {
+  fs.writeFileSync('./config.json', JSON.stringify(file), function writeJSON(err) {
     if (err) return console.error(err);
   });
   const updateChannel = client.channels.cache.find((channel) => channel.id == channels.arma);
@@ -50,8 +50,8 @@ module.exports = async (client) => {
       color: 2664261,
       timestamp: new Date(),
       footer: {
-        icon_url: "https://files.dulliag.de/web/images/logo.jpg",
-        text: "by DulliBot",
+        icon_url: 'https://files.dulliag.de/web/images/logo.jpg',
+        text: 'by DulliBot',
       },
     },
   };
@@ -61,14 +61,14 @@ module.exports = async (client) => {
       helper.log("Benachrichtigung für Version '" + newestChangelogVersion + "' wurde verschickt!")
     )
     .catch((err) => {
-      helper.error("Benachrichtigung für Arma Changelogs abschicken. Grund: " + err);
+      helper.error('Benachrichtigung für Arma Changelogs abschicken. Grund: ' + err);
       helper.sendEmbedLog(
         client,
         channels.logs,
-        "error",
+        'error',
         bot.client_id,
-        "RLRPG Benachrichtigung",
-        "Die Updatebenachrichtigung konnte nicht verschickt werden! Grund: " + err
+        'RLRPG Benachrichtigung',
+        'Die Updatebenachrichtigung konnte nicht verschickt werden! Grund: ' + err
       );
     });
 };

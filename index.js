@@ -1,9 +1,9 @@
-require("dotenv").config();
-const Discord = require("discord.js");
+require('dotenv').config();
+const Discord = require('discord.js');
 const client = new Discord.Client();
-const cron = require("cron").CronJob;
+const cron = require('cron').CronJob;
 
-const helper = require("@dulliag/discord-helper");
+const helper = require('@dulliag/discord-helper');
 const {
   bot,
   commands,
@@ -12,13 +12,13 @@ const {
   arma,
   channels,
   roles_by_reaction,
-} = require("./config.json");
-const { version } = require("./package.json");
-const checkArmaUpdate = require("./functions/checkArmaUpdate");
-const memberCounter = require("./functions/memberCounter");
-const roleClaim = require("./functions/roleClaim");
+} = require('./config.json');
+const { version } = require('./package.json');
+const checkArmaUpdate = require('./functions/checkArmaUpdate');
+const memberCounter = require('./functions/memberCounter');
+const roleClaim = require('./functions/roleClaim');
 
-client.on("ready", () => {
+client.on('ready', () => {
   helper.log(`Logged in as ${client.user.tag}!`);
   client.user
     .setActivity(bot.activity)
@@ -26,15 +26,15 @@ client.on("ready", () => {
   helper.sendEmbedLog(
     client,
     channels.logs,
-    "success",
+    'success',
     clientId,
-    "Bot starten",
-    "Der Bot wurde erfolgreich gestartet!"
+    'Bot starten',
+    'Der Bot wurde erfolgreich gestartet!'
   );
 
   // Check for ReallifeRPG updates if the feature is enabled
   if (arma.enabled) {
-    const arma = new cron("*/15 * * * *", () => {
+    const arma = new cron('*/15 * * * *', () => {
       checkArmaUpdate(client, clientId);
     });
     arma.start();
@@ -43,7 +43,7 @@ client.on("ready", () => {
   if (roles_by_reaction.enabled) roleClaim(client, clientId);
 });
 
-client.on("guildMemberAdd", (member) => {
+client.on('guildMemberAdd', (member) => {
   // Update stats
   memberCounter(client, member);
 
@@ -60,11 +60,11 @@ client.on("guildMemberAdd", (member) => {
   helper.sendWelcomeMessage(client, channels.welcome, member);
 });
 
-client.on("guildMemberRemove", (member) => {
+client.on('guildMemberRemove', (member) => {
   memberCounter(client, member);
 });
 
-client.on("message", (msg) => {
+client.on('message', (msg) => {
   if (helper.isBot(msg.member)) return;
 
   if (msg.content.substr(0, commands.prefix.length) !== commands.prefix) return;
@@ -73,10 +73,10 @@ client.on("message", (msg) => {
     action = cmd.split(/ /g)[1];
 
   switch (action) {
-    case "CLEAR":
-    case "clear":
-      if (!helper.hasPermission(msg.member, ["MANAGE_MESSAGES"])) {
-        msg.reply("du hast keine Rechte zum säubern des Kanals!");
+    case 'CLEAR':
+    case 'clear':
+      if (!helper.hasPermission(msg.member, ['MANAGE_MESSAGES'])) {
+        msg.reply('du hast keine Rechte zum säubern des Kanals!');
         return;
       }
 
@@ -87,12 +87,12 @@ client.on("message", (msg) => {
             true /*filter old messages means only messages within the last 14 days are gonna get removed*/
           )
           .then(() => {
-            msg.reply("hat den Kanal aufgeräumt");
+            msg.reply('hat den Kanal aufgeräumt');
             helper.log(`${msg.member.user.username} hat den Kanal ${msg.channel.name} gesäubert!`);
           })
           .catch((err) => {
             msg.reply(
-              "Der Befehl konnte nicht ausgeführt werden. Ein Fehlerbericht wurde erstellt!"
+              'Der Befehl konnte nicht ausgeführt werden. Ein Fehlerbericht wurde erstellt!'
             );
             helper.error(
               `${msg.member.user.username} hat den Kanal ${msg.channel.name} gesäubert! Grund: ${err}`
@@ -101,18 +101,18 @@ client.on("message", (msg) => {
       });
       break;
 
-    case "VERSION":
-    case "version":
+    case 'VERSION':
+    case 'version':
       msg.reply(`ich laufe auf der Version ${version}!`);
       break;
 
-    case "AUPDATE":
-    case "aupdate":
+    case 'AUPDATE':
+    case 'aupdate':
       checkArmaUpdate(client, clientId);
       break;
 
-    case "HELP":
-    case "help":
+    case 'HELP':
+    case 'help':
     default:
       // var txt = "";
       // commands.forEach((cmd) => {
