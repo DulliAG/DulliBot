@@ -1,6 +1,6 @@
 require('dotenv').config();
-const Discord = require('discord.js');
-const client = new Discord.Client();
+const { Client } = require('discord.js');
+const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
 const cron = require('cron').CronJob;
 
 const helper = require('@dulliag/discord-helper');
@@ -20,17 +20,8 @@ const roleClaim = require('./functions/roleClaim');
 
 client.on('ready', () => {
   helper.log(`Logged in as ${client.user.tag}!`);
-  client.user
-    .setActivity(bot.activity)
-    .then(() => helper.log("Bot activity was set to '" + bot.activity + "'!"));
-  helper.sendEmbedLog(
-    client,
-    channels.logs,
-    'success',
-    clientId,
-    'Bot starten',
-    'Der Bot wurde erfolgreich gestartet!'
-  );
+  // Set bot-information
+  client.user.setActivity({ name: bot.activity });
 
   // Check for ReallifeRPG updates if the feature is enabled
   if (arma.enabled) {
@@ -40,6 +31,7 @@ client.on('ready', () => {
     arma.start();
   }
 
+  // Run roles-by-reaction if enabled
   if (roles_by_reaction.enabled) roleClaim(client, clientId);
 });
 
@@ -64,10 +56,10 @@ client.on('guildMemberRemove', (member) => {
   memberCounter(client, member);
 });
 
-client.on('message', (msg) => {
+client.on('messageCreate', (msg) => {
   if (helper.isBot(msg.member)) return;
 
-  if (msg.content.substr(0, commands.prefix.length) !== commands.prefix) return;
+  if (msg.content.substring(0, commands.prefix.length) !== commands.prefix) return;
 
   const cmd = msg.content,
     action = cmd.split(/ /g)[1];
@@ -75,7 +67,7 @@ client.on('message', (msg) => {
   switch (action) {
     case 'CLEAR':
     case 'clear':
-      if (!helper.hasPermission(msg.member, ['MANAGE_MESSAGES'])) {
+      if (!msg.member.permissions.has('MANAGE_MESSAGES')) {
         msg.reply('du hast keine Rechte zum säubern des Kanals!');
         return;
       }
