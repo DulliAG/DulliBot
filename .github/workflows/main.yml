@@ -18,7 +18,7 @@ jobs:
           server: ${{ secrets.SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: Dota2PatchBot/
+          server-dir: DulliBot/
   setup:
     needs: deploy
     name: Run bot
