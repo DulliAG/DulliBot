@@ -20,6 +20,8 @@ const checkArmaUpdate = require('./functions/checkArmaUpdate');
 const memberCounter = require('./functions/memberCounter');
 const roleClaim = require('./functions/roleClaim');
 
+const PRODUCTION = process.env.PRODUCTION == 'true';
+
 client.on('ready', () => {
   helper.log(`Logged in as ${client.user.tag}!`);
   if (PRODUCTION) {
@@ -36,6 +38,7 @@ client.on('ready', () => {
     const arma = new cron('*/15 * * * *', () => {
       checkArmaUpdate(client);
     });
+    if (!PRODUCTION) arma.fireOnTick();
     arma.start();
   }
 
