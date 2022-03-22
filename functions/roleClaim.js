@@ -49,10 +49,9 @@ const firstMessage = async (client, channelId, text, reactions = []) => {
 
 /**
  * @param {Discord.Client} client
- * @param {string} botId
  * @returns {void}
  */
-module.exports = (client, botId) => {
+module.exports = (client) => {
   const getCustomEmoji = (emojiName) =>
     client.emojis.cache.find((emoji) => emoji.name === emojiName);
   const reactions = [];
@@ -77,7 +76,7 @@ module.exports = (client, botId) => {
    */
   const handleReaction = (reaction, member, add) => {
     // Check if the message interaction was triggered by an an actual user and not by an registered bot
-    if (member.id === botId) return;
+    if (member.id === client.user.id) return;
 
     const emoji = reaction._emoji.name;
     const { guild } = reaction.message;

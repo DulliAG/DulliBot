@@ -4,9 +4,9 @@ const fs = require('fs');
 
 const fileName = '../config.json';
 const file = require(fileName);
-const { bot, channels } = require(fileName);
 const helper = require('@dulliag/discord-helper');
 
+const { channels } = require(CONFIG_FILE_NAME);
 const { createLog, logType } = require('../Logs');
 
 /**
@@ -80,7 +80,7 @@ module.exports = async (client) => {
         client,
         channels.logs,
         'error',
-        bot.client_id,
+        client.user.id,
         'RLRPG Benachrichtigung',
         'Die Updatebenachrichtigung konnte nicht verschickt werden! Grund: ' + err
       );

@@ -34,7 +34,7 @@ client.on('ready', () => {
   // Check for ReallifeRPG updates if the feature is enabled
   if (arma.enabled) {
     const arma = new cron('*/15 * * * *', () => {
-      checkArmaUpdate(client, clientId);
+      checkArmaUpdate(client);
     });
     arma.start();
   }

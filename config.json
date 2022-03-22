@@ -1,14 +1,9 @@
 {
-  "bot": {
-    "client_id": "814289151250923551",
-    "token": "DONT_ENTER_HERE_ANYMORE",
-    "activity": "!db for more"
-  },
   "logs": {
     "colors": { "success": 2664261, "information": 38399, "warning": 16738816, "error": 16711680 }
   },
+  "bot": { "activity": "!db for more" },
   "commands": { "prefix": "!db", "blacklist": ["!ama", "!st", "!sb"] },
-  "clientId": "814289151250923551",
   "roles": {
     "rlrpg": "812142980806737930",
     "guest": "812142868780417045",
