@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR /var/www/DulliBot
+WORKDIR /home/bots/DulliBot
 
 Copy . .
 

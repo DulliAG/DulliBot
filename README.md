@@ -3,6 +3,23 @@
   <h1 align="center">DulliBot</h1>
 </p>
 
+## :calendar: Planned Changes 2022
+
+<details>
+  <summary>🔔 RLRPG-Bot</summary>
+  Create own Discord-Bot for <a href="//realliferpg.de">ReallifeRPG Mod Updates</a>
+</details>
+
+<details>
+  <summary>♻ Improved Code Structure</summary>
+  Improve code structure (minify index.js) for better development and a better structure for our config.json
+</details>
+
+<details>
+  <summary>👽 Roles-by-Reaction</summary>
+  Provide an own solution for roles-by-reaction
+</details>
+
 ## :rocket: Features
 
 <details>

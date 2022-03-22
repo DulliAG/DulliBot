@@ -1,6 +1,13 @@
 require('dotenv').config();
-const { Client } = require('discord.js');
-const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
+const { Client, Intents } = require('discord.js');
+const client = new Client({
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
+});
+
 const cron = require('cron').CronJob;
 
 const helper = require('@dulliag/discord-helper');
@@ -43,7 +50,9 @@ client.on('ready', () => {
   }
 
   // Run roles-by-reaction if enabled
-  if (roles_by_reaction.enabled) roleClaim(client, clientId);
+  if (roles_by_reaction.enabled) {
+    roleClaim(client);
+  }
 });
 
 client.on('guildMemberAdd', (member) => {

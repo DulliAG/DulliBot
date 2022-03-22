@@ -91,12 +91,14 @@ module.exports = (client) => {
   };
 
   client.on('messageReactionAdd', (reaction, member) => {
-    if (reaction.message.channel.id == channels.roles && !member.bot)
+    if (reaction.message.channel.id == channels.roles && !member.bot) {
       handleReaction(reaction, member, true);
+    }
   });
 
   client.on('messageReactionRemove', (reaction, member) => {
-    if (reaction.message.channel.id == channels.roles && !member.bot)
+    if (reaction.message.channel.id == channels.roles && !member.bot) {
       handleReaction(reaction, member, false);
+    }
   });
 };
