@@ -1,81 +1,112 @@
 <p align="center">
-  <img src="https://files.dulliag.de/share/qr-code.png" width="240px" height="auto">
+  <img src="assets/dag-logo.png" width="240px" height="auto">
+  <h1 align="center">DulliBot</h1>
 </p>
-
-<h1 align="center">
-  DulliBot
-</h1>
 
 ## :rocket: Features
 
-- [x] Configuration via JSON-File
-- [x] Welcome message(for server & user)
-- [x] Clear channel
-- [x] Roles by reaction
-- [x] [Server stats](https://files.dulliag.de/share/Discord_AL5lriRcmD.png)
-- [x] Kick {Member} {Reason}
-- [x] Ban {Member} {Reason}
-- [x] Read an RSS-Feed
-  - Done by Discord.RSS
-- [x] Get stock informations(for specific stocks)
+<details>
+  <summary>🔧 Configuration</summary>
+  Specify roles-by-reaction, bot-activity... using an `config.json`
+</details>
 
-## :calendar: Planned features
+<details>
+  <summary>👋 Welcome message</summary>
+  Welcome every user by sending an welcome-message and giving them a specific role
+</details>
 
-#### :chart_with_upwards_trend: Stocks
+<details>
+  <summary>👽 Roles-by-Reaction</summary>
+  Grant your users access to permissions by reaction on a message
+</details>
 
-- [ ] Add graph to daily reports
-- [ ] Add graph with current
-- [ ] Weekly Reports
-  - Development of a share summarized in a graph
-- [ ] Get a list of all subscribed stocks
-- [ ] Add & delete stocks via command
+<details>
+  <summary>📰 Auto-Publishing</summary>
+  Automaticly publish messages in specific categories. (Only works for news-channels)
+</details>
 
-#### :warning: Warn system
+<details>
+  <summary>📊 Server-Stats</summary>
+  Don't loose track about the amount of users and bots on your Discord Server
+</details>
 
-- [ ] Warn an player
-- [ ] Kick or ban player after an amount of warns
+<details>
+  <summary>📝 Logging</summary>
+  Log your user action in an external MariaDB oder PostgreSQL Database
+</details>
+
+<details>
+  <summary>🔔 ReallifeRPG Mod Update Notifications</summary>
+  Keep your users about <a href="//realliferpg.de">ReallifeRPG Mod Updates</a> up to date
+</details>
 
 ## :wrench: Installation
 
-_**!!! Make sure you have registered an Discord-Bot !!!**_
+1. Clone the Repository
 
-1. Clone the Repository `git clone https://github.com/tklein1801/Discord-Bot.git`
+   ```shell
+   git clone https://github.com/DulliAG/Discord-Bot.git
+   ```
 
-2. Go into the bot directory `cd discord-bot/`
+2. Create an `.env`-file for your credentials
 
-3. Install the required dependencies `npm install`
+   ```
+   PRODUCTION=true
+   TOKEN=<Discord Bot Token>
+   DB_HOST=<Database Host>
+   DB_USER=<Database Username>
+   DB_PASSWORD=<Database Password>
+   DB_DATABASE=<Database>
+   ```
 
-4. Create an .env-file containing the Discord bot token
+3. Create an `config.json` for your bot
 
-```
-TOKEN=DISCORD_BOT_TOKEN
-```
+   ```json
+   {
+     "bot": {
+       "activity": "BOT_ACTIVITY"
+     },
+     "commands": { "prefix": "!db", "blacklist": ["!commands-which-are-used-by-other-bots"] },
+     "roles": {
+       "rlrpg": "DISCORD_ROLE_ID",
+       "guest": "DISCORD_ROLE_ID",
+       "sponsor": "DISCORD_ROLE_ID",
+       "coding": "DISCORD_ROLE_ID",
+       "developer": "DISCORD_ROLE_ID",
+       "admin": "DISCORD_ROLE_ID",
+       "owner": "DISCORD_ROLE_ID",
+       "gruender": "DISCORD_ROLE_ID"
+     },
+     "roles_by_reaction": {
+       "enabled": true,
+       "reactions": [{ "id": "ROLE_ID", "name": "ROLE_NAME", "emoji": "EMOJI_NAME" }]
+     },
+     "arma": { "enabled": true, "current_version": "LATEST_REALLIFERPG_MOD_VERSION" },
+     "channels": {
+       "welcome": "WELCOME_CHANNEL_ID",
+       "roles": "812142530413068298",
+       "logs": "LOGS_CHANNEL_ID",
+       "arma": "REALLIFERPG_CHANNEL_ID",
+       "stats": { "member": "MEMBER_STATS_CHANNEL_ID", "bots": "BOTS_STATS_CHANNEL_ID" }
+     },
+     "auto_publish": { "enabled": true, "categories": ["CATEGORY_ID"] }
+   }
+   ```
 
-5. Update the existing [config.json](./src/config.json)
+4. Install the required dependencies
 
-6. Now you can follow the [Hosting](#hosting) steps
+   ```shell
+   npm i
+   ```
 
-## :gear: Hosting
-
-**Linux**
-
-_Make sure you have [cloned](#installation) the Repository before this steps_
-
-1. Run the command `bash createScreen.sh`
-
-_NOTE: Make sure you have `screen` installed or install it with `apt-get install screen`_
-
-## :postal_horn: Commands
-
-_To execute an command you need to add the prefix `!`_
-
-| Command | Action                       |
-| ------- | ---------------------------- |
-| `clear` | Deletes all channel-messages |
-| `ban`   | Ban an player                |
-| `kick`  | Kick an player               |
+5. Start the server
+   ```shell
+   npm start
+   ```
 
 ## :link: Used Ressources
 
 [DiscordJS](https://discord.com/developers/docs/intro)
+[Supabase](https://supabase.io)
 [Cron](https://www.npmjs.com/package/cron)
+[@dulliag/logger.js](https://www.npmjs.com/package/@dulliag/logger.js)
