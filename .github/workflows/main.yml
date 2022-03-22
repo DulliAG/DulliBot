@@ -2,7 +2,7 @@ name: 🚀 Deploy DulliBot
 
 on:
   push:
-    branches: ['master']
+    branches: ['main']
 
 jobs:
   deploy:
@@ -18,13 +18,13 @@ jobs:
           server: ${{ secrets.SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_DIR }}
+          server-dir: Dota2PatchBot/
   setup:
     needs: deploy
-    name: Update & start container
+    name: Run bot
     runs-on: ubuntu-latest
     steps:
-      - name: Reinstall container
+      - name: Install dependencies
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER }}
@@ -32,9 +32,10 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            cd /var/www/DulliBot/
+            cd /home/deployment/DulliBot/
             docker stop DulliBotProd
             docker container rm DulliBotProd
             docker image rm dullibot
+            npm i
             docker build -t dullibot .
             docker run -itd --restart unless-stopped --name=DulliBotProd dullibot
