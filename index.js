@@ -4,6 +4,7 @@ const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
 const cron = require('cron').CronJob;
 
 const helper = require('@dulliag/discord-helper');
+const { logger, logType, createLog } = require('./Logs');
 const {
   bot,
   commands,
@@ -21,6 +22,12 @@ const roleClaim = require('./functions/roleClaim');
 
 client.on('ready', () => {
   helper.log(`Logged in as ${client.user.tag}!`);
+  if (PRODUCTION) {
+    logger.application = client.user.tag;
+    helper.log(`Application is running in production-mode!`);
+    createLog(logType.INFORMATION, 'Bot started', `${client.user.tag} started!`);
+  }
+
   // Set bot-information
   client.user.setActivity({ name: bot.activity });
 
@@ -44,10 +51,16 @@ client.on('guildMemberAdd', (member) => {
   let guest_role = member.guild.roles.cache.find((role) => role.id === roles.guest);
   member.roles
     .add(guest_role)
-    .then(() =>
-      helper.log("Rolle 'Guest' wurde dem Benutzer '" + member.user.tag + "' zugewiesen!")
-    )
-    .catch((err) => helper.error("Rolle 'Gast' zuweisen! Aufgrund von: " + err));
+    .then(() => {
+      let log = "Rolle 'Guest' wurde dem Benutzer '" + member.user.tag + "' zugewiesen!";
+      helper.log(log);
+      createLog(logType.INFORMATION, 'Member join', log);
+    })
+    .catch((err) => {
+      let log = "Rolle 'Gast' zuweisen! Aufgrund von: " + err;
+      helper.error(log);
+      createLog(logType.ERROR, 'Member join', log);
+    });
 
   // Send welcome-message for an new member
   helper.sendWelcomeMessage(client, channels.welcome, member);
@@ -66,8 +79,9 @@ client.on('messageCreate', (msg) => {
     msg.crosspostable
   ) {
     msg.crosspost().then(() => {
-      if (PRODUCTION) console.log('CREATE LOG');
-      helper.log(`Published message in '${msg.channel.name}'!`);
+      let log = `Published message in '${msg.channel.name}'!`;
+      helper.log(log);
+      createLog(logType.INFORMATION, 'Publish news', log);
     });
     return;
   }
@@ -80,11 +94,18 @@ client.on('messageCreate', (msg) => {
   const cmd = msg.content,
     action = cmd.split(/ /g)[1];
 
+  createLog(logType.INFORMATION, 'Use command', `${msg.author.username} used the command ${cmd}!`);
+
   switch (action) {
     case 'CLEAR':
     case 'clear':
       if (!msg.member.permissions.has('MANAGE_MESSAGES')) {
         msg.reply('du hast keine Rechte zum säubern des Kanals!');
+        createLog(
+          logType.WARNING,
+          'Permissions',
+          `${msg.author.username} used the command ${cmd} without permissions!`
+        );
         return;
       }
 
@@ -96,15 +117,17 @@ client.on('messageCreate', (msg) => {
           )
           .then(() => {
             msg.reply('hat den Kanal aufgeräumt');
-            helper.log(`${msg.member.user.username} hat den Kanal ${msg.channel.name} gesäubert!`);
+            let log = `${msg.member.user.username} hat den Kanal ${msg.channel.name} gesäubert!`;
+            helper.log(log);
+            createLog(logType.INFORMATION, 'Use Command', log);
           })
           .catch((err) => {
             msg.reply(
               'Der Befehl konnte nicht ausgeführt werden. Ein Fehlerbericht wurde erstellt!'
             );
-            helper.error(
-              `${msg.member.user.username} hat den Kanal ${msg.channel.name} gesäubert! Grund: ${err}`
-            );
+            let log = `${msg.member.user.username} hat den Kanal ${msg.channel.name} gesäubert! Grund: ${err}`;
+            helper.error(log);
+            createLog(logType.ERROR, 'Use Command', log);
           });
       });
       break;

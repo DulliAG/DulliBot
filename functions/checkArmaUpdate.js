@@ -7,6 +7,8 @@ const file = require(fileName);
 const { bot, channels } = require(fileName);
 const helper = require('@dulliag/discord-helper');
 
+const { createLog, logType } = require('../Logs');
+
 /**
  * @param {Discord.Client} client
  * @returns {Promise<void>}
@@ -34,8 +36,16 @@ module.exports = async (client) => {
   };
 
   // Check if there is a new version avaiable
-  helper.log('Checking for new ReallifeRPG mod version...');
   if (lastCheckedVersion === newestChangelogVersion) return;
+  let log = 'Checking for new ReallifeRPG mod version...';
+  helper.log(log);
+  createLog(logType.INFORMATION, 'ReallifeRPG Mod', log);
+  if (lastCheckedVersion === newestChangelogVersion) {
+    let log = 'There is no new update avaiable!';
+    helper.log(log);
+    createLog(logType.INFORMATION, 'ReallifeRPG Mod', log);
+    return;
+  }
 
   file.arma = { enabled: true, current_version: newestChangelogVersion };
   fs.writeFileSync('./config.json', JSON.stringify(file), function writeJSON(err) {
@@ -58,10 +68,14 @@ module.exports = async (client) => {
   updateChannel
     .send(updateMessage)
     .then(() =>
-      helper.log("Benachrichtigung für Version '" + newestChangelogVersion + "' wurde verschickt!")
     )
+      let log = `Benachrichtigung für Version '${newestChangelogVersion}' wurde verschickt!`;
+      helper.log(log);
+      createLog(logType.INFORMATION, 'Notification', log);
     .catch((err) => {
-      helper.error('Benachrichtigung für Arma Changelogs abschicken. Grund: ' + err);
+      let log = 'Benachrichtigung für Arma Changelogs abschicken. Grund: ' + err;
+      helper.error(log);
+      createLog(logType.ERROR, 'Notification', log);
       helper.sendEmbedLog(
         client,
         channels.logs,
