@@ -1,7 +1,4 @@
 {
-  "logs": {
-    "colors": { "success": 2664261, "information": 38399, "warning": 16738816, "error": 16711680 }
-  },
   "bot": { "activity": "!db for more" },
   "commands": { "prefix": "!db", "blacklist": ["!ama", "!st", "!sb"] },
   "roles": {
@@ -17,6 +14,7 @@
   "roles_by_reaction": {
     "enabled": true,
     "reactions": [
+      { "id": "955813869408882688", "name": "Gaming", "emoji": "blobbo" },
       { "id": "861666991650504714", "name": "Twitch", "emoji": "twitch" },
       { "id": "812142980806737930", "name": "ReallifeRPG", "emoji": "rlrpg" },
       { "id": "851979261421158451", "name": "Stocks", "emoji": "stonks" },
@@ -26,7 +24,7 @@
       { "id": "886195697894981632", "name": "New World", "emoji": "newworld" }
     ]
   },
-  "arma": { "enabled": true, "current_version": "1.19.6" },
+  "arma": { "enabled": true, "current_version": "1.19.7" },
   "channels": {
     "welcome": "812142474038476812",
     "roles": "812142530413068298",
@@ -34,5 +32,5 @@
     "arma": "814828181739274241",
     "stats": { "member": "812704239159083049", "bots": "812704297719824414" }
   },
-  "auto_publish": { "enabled": true, "categories": ["814828011580555265"] }
+  "auto_publish": { "enabled": true, "categories": ["814828011580555265", "955492137577877534"] }
 }
