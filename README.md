@@ -11,12 +11,12 @@
 </details>
 
 <details>
-  <summary>♻ Improved Code Structure</summary>
+  <summary><s>♻ Improved Code Structure</s></summary>
   Improve code structure (minify index.js) for better development and a better structure for our config.json
 </details>
 
 <details>
-  <summary>👽 Roles-by-Reaction</summary>
+  <summary><s>👽 Roles-by-Reaction</s></summary>
   Provide an own solution for roles-by-reaction
 </details>
 
