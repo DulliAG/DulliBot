@@ -1,4 +1,3 @@
-import { LogVariant } from '@dulliag/logger.js';
 import {
   Client,
   GuildEmoji,
@@ -8,7 +7,7 @@ import {
   PartialUser,
   User,
 } from 'discord.js';
-import { createLog } from '../Log';
+import { log } from '../log';
 
 import { roles_by_reaction, channels } from '../config.json';
 
@@ -34,41 +33,33 @@ export default (client: Client) => {
       const channel = guild.channels.cache.find((ch) => ch.id === channelId);
 
       if (!channel) {
-        createLog(
-          LogVariant.WARNING,
+        log(
+          'WARNING',
           LOG_CATEGORY,
           `Der Kanal '${channelId}' auf '${guild.name}' wurde nicht gefunden!`
         );
         return;
       }
 
-      if (channel.isText()) {
-        channel.messages.fetch().then((msgs) => {
-          if (msgs.size < 1) {
-            channel
-              .send(final_message)
-              .then((message) => {
-                // Add reactions
-                addReactions(message, emojis);
-              })
-              .catch((err) =>
-                createLog(
-                  LogVariant.ERROR,
-                  LOG_CATEGORY,
-                  `Die Nachricht konnte nicht verschickt werden`
-                )
-              );
-          } else {
-            for (const msg of msgs) {
-              msg[1].edit(final_message);
-              addReactions(msg[1], emojis);
-            }
-          }
-        });
-      } else {
-        createLog(LogVariant.ERROR, LOG_CATEGORY, `Der Kanal '${channel.id}' ist kein Textkanal!`);
-        return;
+      if (!channel.isText()) {
+        return log('WARNING', LOG_CATEGORY, `Der Kanal '${channel.id}' ist kein Textkanal!`);
       }
+
+      channel.messages.fetch().then((msgs) => {
+        if (msgs.size < 1) {
+          channel
+            .send(final_message)
+            .then((message) => addReactions(message, emojis))
+            .catch((err) =>
+              log('ERROR', LOG_CATEGORY, `Die Nachricht konnte nicht verschickt werden`)
+            );
+        } else {
+          for (const msg of msgs) {
+            msg[1].edit(final_message);
+            addReactions(msg[1], emojis);
+          }
+        }
+      });
     });
   };
 
@@ -86,8 +77,8 @@ export default (client: Client) => {
       (entry) => entry.emoji === reaction.emoji.name
     )[0];
     if (!role) {
-      createLog(
-        LogVariant.ERROR,
+      log(
+        'ERROR',
         LOG_CATEGORY,
         `Eine Rolle für das Emoji '${reaction.emoji.name}' wurde nicht gefunden! Schaue mal in der '../config.json' nach!`
       );
@@ -98,8 +89,8 @@ export default (client: Client) => {
       (guildMember) => guildMember.id === user.id
     );
     if (!guildMember) {
-      createLog(
-        LogVariant.ERROR,
+      log(
+        'ERROR',
         LOG_CATEGORY,
         `Ein GuildMember für den Benutzer '${user.id}' konnte auf '${reaction.message.guild?.name}' nicht gefunden werden!`
       );
@@ -109,25 +100,21 @@ export default (client: Client) => {
     try {
       if (addRole) {
         guildMember.roles.add(role.id);
-        createLog(
-          LogVariant.INFORMATION,
+        log(
+          'LOG',
           LOG_CATEGORY,
           `'${guildMember.user.tag}' wurde die Rolle '${role.name}' mittels Reaktion hinzugefügt!`
         );
       } else {
         guildMember.roles.remove(role.id);
-        createLog(
-          LogVariant.INFORMATION,
+        log(
+          'LOG',
           LOG_CATEGORY,
           `'${guildMember.user.tag}' wurde die Rolle '${role.name}' mittels Reaktion entfernt!`
         );
       }
     } catch (err) {
-      createLog(
-        LogVariant.ERROR,
-        LOG_CATEGORY,
-        `Die Rolle konnte nicht zugewiesen werden!\nGrund: ${err}`
-      );
+      log('ERROR', LOG_CATEGORY, `Die Rolle konnte nicht zugewiesen werden!\nGrund: ${err}`);
     }
   };
 
@@ -139,11 +126,7 @@ export default (client: Client) => {
     const name = reaction.name;
 
     if (!emoji) {
-      createLog(
-        LogVariant.WARNING,
-        LOG_CATEGORY,
-        `Emoji '${reaction.emoji}' wurde nicht gefunden!`
-      );
+      log('ERROR', LOG_CATEGORY, `Emoji '${reaction.emoji}' wurde nicht gefunden!`);
     }
 
     reactions.push(emoji!);

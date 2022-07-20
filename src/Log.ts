@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { Client, Credentials, Database, LogVariant } from '@dulliag/logger.js';
+import { Client, Credentials, LogType } from '@dulliag/logger.js';
 
 const credentials: Credentials = {
   host: process.env.DB_HOST!,
@@ -9,8 +9,10 @@ const credentials: Credentials = {
   database: process.env.DB_DATABASE!,
 };
 
-const LOGGER = new Client(Database.PG, credentials, process.env.APPLICATION);
+export const client = new Client('PostgreSQL', credentials, {
+  application: process.env.APPLICATION!,
+});
 
-export const createLog = (variant: LogVariant, category: string, message: string) => {
-  return process.env.PRODUCTION! == 'true' ? LOGGER.log(variant, category, message) : null;
-};
+export function log(type: LogType, category: string, message: string) {
+  return client.log(type, category, message);
+}

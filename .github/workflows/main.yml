@@ -1,30 +1,83 @@
-name: 🚀 Deploy DulliBot
+name: Publish Docker image
 
 on:
   push:
-    branches: ['master']
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    name: 🎉 Deploy
+  build_image:
+    name: Build Docker image
     runs-on: ubuntu-latest
+    environment: production
     steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v2
-
-      - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@4.1.0
+      - uses: actions/checkout@v3
+      - name: Create `.env`-file
+        uses: SpicyPizza/create-envfile@v1.3
         with:
-          server: ${{ secrets.SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: DulliBot/
-  setup:
-    needs: deploy
-    name: Run bot
+          envkey_PRODUCTION: ${{ secrets.PRODUCTION }}
+          envkey_APPLICATION: ${{ secrets.APPLICATION }}
+          envkey_TOKEN: ${{ secrets.TOKEN }}
+          envkey_DB_HOST: ${{ secrets.DB_HOST }}
+          envkey_DB_USER: ${{ secrets.DB_USER }}
+          envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          envkey_DB_DATABASE: ${{ secrets.DB_DATABASE }}
+
+      - name: Build Docker image
+        run: |
+          rm .npmrc 
+          echo $'@dulliag:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken='$NPM_TOKEN >> .npmrc
+          docker build --secret id=npm,src=.npmrc . -t ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
+          mkdir -p artifacts
+          docker save ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} > artifacts/docker-image.tar
+        env:
+          DOCKER_BUILDKIT: 1
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Save Docker image
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-artifact
+          path: artifacts
+          retention-days: 1
+
+  push_image:
+    needs: build_image
+    name: Push Docker image
     runs-on: ubuntu-latest
     steps:
-      - name: Install dependencies
+      - name: Retrieve saved Docker image
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-artifact
+          path: artifacts
+
+      - name: Load Docker image
+        run: |
+          cd artifacts
+          docker load < docker-image.tar
+
+      - name: Login
+        run: |
+          echo ${{ secrets.PAT }} | docker login ghcr.io -u ${{ secrets.DOCKER_USER }} --password-stdin
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
+
+      - name: Delete artifact
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: docker-artifact
+
+  deploy_image:
+    needs: push_image
+    name: Deploy Docker image to server
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Connect and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER }}
@@ -32,10 +85,10 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            cd /home/deployment/DulliBot/
-            docker stop DulliBotProd
-            docker container rm DulliBotProd
-            docker image rm dullibot
-            npm i
-            docker build -t dullibot .
-            docker run -itd --restart unless-stopped --name=DulliBotProd dullibot
+            echo ${{ secrets.NPM_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USER }} --password-stdin
+            docker container stop dulli-bot
+            docker container rm dulli-bot
+            docker image rm ghcr.io/dulliag/dulli-bot:latest
+            docker pull ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
+            docker tag ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} ghcr.io/dulliag/dulli-bot:latest
+            docker run -itd --restart on-failure:3 --name=dulli-bot ghcr.io/dulliag/dulli-bot:latest

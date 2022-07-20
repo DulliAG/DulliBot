@@ -1,6 +1,5 @@
-import { LogVariant } from '@dulliag/logger.js';
 import { BaseCommandInteraction, Client } from 'discord.js';
-import { createLog } from '../Log';
+import { log } from '../log';
 import { Command } from '../core/command';
 
 export const ClearCommand: Command = {
@@ -21,8 +20,8 @@ export const ClearCommand: Command = {
         channel
           .bulkDelete(msgs, true)
           .then(async () => {
-            createLog(
-              LogVariant.INFORMATION,
+            log(
+              'INFORMATION',
               'ExecuteCommand',
               `'${interaction.user.username}' hat den Kanal '${channel.name}' gesäubert!`
             );
@@ -32,7 +31,7 @@ export const ClearCommand: Command = {
               content: `Der Kanal '${channel.name}' wurde von '${interaction.user.username}' gesäubert!`,
             });
           })
-          .catch((err) => createLog(LogVariant.ERROR, 'ExecuteCommand', err));
+          .catch((err) => log('ERROR', 'ExecuteCommand', err));
       });
     }
   },

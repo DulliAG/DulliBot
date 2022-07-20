@@ -1,6 +1,5 @@
-import { LogVariant } from '@dulliag/logger.js';
 import { Client } from 'discord.js';
-import { createLog } from '../Log';
+import { log } from '../log';
 
 import { auto_publish, commands } from '../config.json';
 
@@ -11,7 +10,7 @@ export default (client: Client) => {
     //   message.content.substring(0, commands.prefix.length) !== commands.prefix
     // ) {
     //   createLog(
-    //     LogVariant.INFORMATION,
+    //     "INFORMATION",
     //     'Use command',
     //     `${message.author.username} used the command '${message.content}'!`
     //   );
@@ -26,12 +25,11 @@ export default (client: Client) => {
       message.crosspostable
     ) {
       const LOG_CATEGORY = 'Autopublish';
-      let log = `Published message in '${message.channel.name}'!`;
+      const LOG_MESSAGE = `Published message in '${message.channel.name}'!`;
       message
         .crosspost()
-        .then(() => createLog(LogVariant.INFORMATION, LOG_CATEGORY, log))
-        .catch((err) => createLog(LogVariant.ERROR, LOG_CATEGORY, err));
-
+        .then(() => log('LOG', LOG_CATEGORY, LOG_MESSAGE))
+        .catch((err) => log('ERROR', LOG_CATEGORY, err));
       return;
     }
   });
