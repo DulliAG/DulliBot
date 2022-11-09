@@ -1,7 +1,7 @@
 import { Client } from 'discord.js';
 import { log } from '../log';
 
-import { auto_publish, commands } from '../config.json';
+import { auto_publish } from '../config.json';
 
 export default (client: Client) => {
   client.on('messageCreate', (message) => {

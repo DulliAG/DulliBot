@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node src/index.ts",
+    "dev": "nodemon --ignore '*config.json' src/index.ts",
     "start": "dist src/index",
     "release": "standard-version"
   },

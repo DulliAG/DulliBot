@@ -1,4 +1,5 @@
 import { BaseCommandInteraction, Client } from 'discord.js';
+import { handleError } from '../handler/error.handler';
 import { Command } from '../core/command';
 import RealliferpgUpdates from '../core/realliferpg-updates';
 
@@ -7,11 +8,15 @@ export const ReallifeRpgCommand: Command = {
   description: 'Check for a new ReallifeRPG update',
   type: 'CHAT_INPUT',
   run: async (client: Client, interaction: BaseCommandInteraction) => {
-    RealliferpgUpdates(client);
+    try {
+      RealliferpgUpdates(client);
 
-    await interaction.followUp({
-      ephemeral: true,
-      content: `Die Prüfung wurde abgeschlossen!`,
-    });
+      await interaction.followUp({
+        ephemeral: true,
+        content: `Die Prüfung wurde abgeschlossen!`,
+      });
+    } catch (error) {
+      handleError(error, 'ExecuteCommand');
+    }
   },
 };

@@ -83,7 +83,6 @@
      "bot": {
        "activity": "BOT_ACTIVITY"
      },
-     "commands": { "prefix": "!db", "blacklist": ["!commands-which-are-used-by-other-bots"] },
      "roles": {
        "rlrpg": "DISCORD_ROLE_ID",
        "guest": "DISCORD_ROLE_ID",

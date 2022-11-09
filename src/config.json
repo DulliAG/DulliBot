@@ -1,6 +1,5 @@
 {
   "bot": { "activity": "me in a new look" },
-  "commands": { "prefix": "!db", "blacklist": ["!ama", "!st", "!sb"] },
   "roles": {
     "rlrpg": "812142980806737930",
     "guest": "812142868780417045",
@@ -24,7 +23,7 @@
       { "id": "886195697894981632", "name": "New World", "emoji": "newworld" }
     ]
   },
-  "arma": { "enabled": true, "current_version": "1.19.7" },
+  "arma": { "enabled": true, "current_version": "2.0.5.1" },
   "channels": {
     "welcome": "812142474038476812",
     "roles": "812142530413068298",

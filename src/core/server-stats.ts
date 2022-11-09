@@ -1,12 +1,12 @@
-import { GuildMember } from 'discord.js';
+import { Guild } from 'discord.js';
 import { channels } from '../config.json';
 
-export default (member: GuildMember) => {
-  member.guild.channels.cache
+export default (guild: Guild) => {
+  guild.channels.cache
     .get(channels.stats.member)
-    ?.setName(`Mitglieder: ${member.guild.members.cache.filter((m) => !m.user.bot).size}`);
+    ?.setName(`Mitglieder: ${guild.members.cache.filter((m) => !m.user.bot).size}`);
 
-  member.guild.channels.cache
+  guild.channels.cache
     .get(channels.stats.bots)
-    ?.setName(`Bots: ${member.guild.members.cache.filter((m) => m.user.bot).size}`);
+    ?.setName(`Bots: ${guild.members.cache.filter((m) => m.user.bot).size}`);
 };

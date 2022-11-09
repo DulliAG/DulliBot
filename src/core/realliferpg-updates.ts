@@ -21,7 +21,7 @@ interface IChangelog {
   updated_at: string;
 }
 
-const getChangelogs = () => {
+export const getChangelogs = () => {
   return axios
     .get('https://api.realliferpg.de/v1/changelog')
     .then((response) => {
@@ -34,27 +34,26 @@ const getChangelogs = () => {
 };
 
 const LOG_CATEGORY = 'Fetch4Updates';
-const CFG = require('../config.json');
 
 export default (client: Client) => {
   return new CronJob('*/15 * * * *', async () => {
-    const LATEST_VERSION = arma.current_version;
+    const CFG = JSON.parse(fs.readFileSync('./src/config.json', 'utf-8'));
+    const LATEST_VERSION = CFG.arma.current_version;
     const CHANGELOGS = await getChangelogs();
     const LATEST_CHANGELOG = CHANGELOGS.data.shift();
 
     if (!CHANGELOGS || !LATEST_CHANGELOG) {
-      log('ERROR', LOG_CATEGORY, "Can't retrieve changelogs!");
-      return;
+      return log('ERROR', LOG_CATEGORY, "Can't retrieve changelogs!");
     }
 
     if (LATEST_CHANGELOG && LATEST_CHANGELOG.version === LATEST_VERSION) return;
-
     client.guilds.cache.forEach((guild) => {
       const channel = guild.channels.cache.find((channel) => channel.id == channels.arma);
       if (channel && channel.isText()) {
         channel
           .send({
-            content: `<@&${roles.rlrpg}>`,
+            // content: `<@&${roles.rlrpg}>`,
+            content: 'q',
             embeds: [
               {
                 title: `Changelog v${LATEST_CHANGELOG.version}`,
@@ -75,7 +74,7 @@ export default (client: Client) => {
           })
           .then(() => {
             CFG.arma.current_version = LATEST_CHANGELOG.version;
-            fs.writeFileSync('./config.json', JSON.stringify(CFG));
+            fs.writeFileSync('./src/config.json', JSON.stringify(CFG));
 
             log(
               'LOG',
