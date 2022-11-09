@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --ignore '*config.json' src/index.ts",
-    "start": "dist src/index",
+    "start": "node dist/src/index",
     "release": "standard-version"
   },
   "keywords": [],
