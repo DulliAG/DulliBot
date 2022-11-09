@@ -1,5 +1,5 @@
 import { Client } from 'discord.js';
-import { log } from '../log';
+import { log } from '../core/log';
 
 import { auto_publish } from '../config.json';
 

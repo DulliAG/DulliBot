@@ -8,23 +8,27 @@ on:
 
 jobs:
   build_image:
-    - name: Build Docker image
-      run: |
-        rm .npmrc 
-        echo $'@dulliag:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken='$NPM_TOKEN >> .npmrc
-        docker build --secret id=npm,src=.npmrc . -t ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
-        mkdir -p artifacts
-        docker save ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} > artifacts/docker-image.tar
-      env:
-        DOCKER_BUILDKIT: 1
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Docker image
+        run: |
+          rm .npmrc 
+          echo $'@dulliag:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken='$NPM_TOKEN >> .npmrc
+          docker build --secret id=npm,src=.npmrc . -t ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
+          mkdir -p artifacts
+          docker save ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} > artifacts/docker-image.tar
+        env:
+          DOCKER_BUILDKIT: 1
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    - name: Save Docker image
-      uses: actions/upload-artifact@v2
-      with:
-        name: docker-artifact
-        path: artifacts
-        retention-days: 1
+      - name: Save Docker image
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-artifact
+          path: artifacts
+          retention-days: 1
 
   push_image:
     needs: build_image
@@ -44,7 +48,7 @@ jobs:
 
       - name: Login
         run: |
-          echo ${{ secrets.PAT }} | docker login ghcr.io -u ${{ secrets.DOCKER_USER }} --password-stdin
+          echo ${{ secrets.NPM_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USER }} --password-stdin
 
       - name: Push Docker image
         run: |

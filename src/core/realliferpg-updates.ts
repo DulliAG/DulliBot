@@ -4,7 +4,7 @@ import fs from 'fs';
 import { format, parseISO } from 'date-fns';
 import axios from 'axios';
 
-import { log } from '../log';
+import { log } from './log';
 import { arma, channels, roles } from '../config.json';
 
 interface IChangelog {

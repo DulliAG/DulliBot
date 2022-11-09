@@ -1,6 +1,6 @@
 import { BaseCommandInteraction, Client } from 'discord.js';
 import { Commands } from '../core/command';
-import { log } from '../log';
+import { log } from '../core/log';
 
 const LOG_CATEGORY = 'ExecuteSlashCommand';
 

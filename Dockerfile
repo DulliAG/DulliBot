@@ -1,9 +1,15 @@
 FROM node:alpine
 
-WORKDIR /home/bots/DulliBot
+LABEL org.opencontainers.image.source https://github.com/DulliAG/DulliBot
 
-Copy . .
+WORKDIR /usr/src/dullibot/
 
-Run npm i
+COPY package*.json ./
+
+RUN --mount=type=secret,id=npm,target=.npmrc npm install
+
+COPY . .
+
+RUN npm run build
 
 CMD ["npm", "start"]

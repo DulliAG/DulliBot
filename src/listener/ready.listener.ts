@@ -4,7 +4,7 @@ import { Client } from 'discord.js';
 import { readFileSync, writeFile } from 'fs';
 
 import { bot, arma, roles_by_reaction } from '../config.json';
-import { log } from '../log';
+import { log } from '../core/log';
 import ReallifeRpgUpdates, { getChangelogs } from '../core/realliferpg-updates';
 import { Commands } from '../core/command';
 import roleClaim from '../core/role-claim';

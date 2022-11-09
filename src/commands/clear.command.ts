@@ -1,5 +1,5 @@
 import { BaseCommandInteraction, Client } from 'discord.js';
-import { log } from '../log';
+import { log } from '../core/log';
 import { Command } from '../core/command';
 import { handleError } from '../handler/error.handler';
 

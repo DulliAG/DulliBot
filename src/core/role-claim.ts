@@ -7,7 +7,7 @@ import {
   PartialUser,
   User,
 } from 'discord.js';
-import { log } from '../log';
+import { log } from './log';
 
 import { roles_by_reaction, channels } from '../config.json';
 
