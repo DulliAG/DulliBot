@@ -8,39 +8,23 @@ on:
 
 jobs:
   build_image:
-    name: Build Docker image
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@v3
-      - name: Create `.env`-file
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-          envkey_PRODUCTION: ${{ secrets.PRODUCTION }}
-          envkey_APPLICATION: ${{ secrets.APPLICATION }}
-          envkey_TOKEN: ${{ secrets.TOKEN }}
-          envkey_DB_HOST: ${{ secrets.DB_HOST }}
-          envkey_DB_USER: ${{ secrets.DB_USER }}
-          envkey_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          envkey_DB_DATABASE: ${{ secrets.DB_DATABASE }}
+    - name: Build Docker image
+      run: |
+        rm .npmrc 
+        echo $'@dulliag:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken='$NPM_TOKEN >> .npmrc
+        docker build --secret id=npm,src=.npmrc . -t ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
+        mkdir -p artifacts
+        docker save ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} > artifacts/docker-image.tar
+      env:
+        DOCKER_BUILDKIT: 1
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Build Docker image
-        run: |
-          rm .npmrc 
-          echo $'@dulliag:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken='$NPM_TOKEN >> .npmrc
-          docker build --secret id=npm,src=.npmrc . -t ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
-          mkdir -p artifacts
-          docker save ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} > artifacts/docker-image.tar
-        env:
-          DOCKER_BUILDKIT: 1
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Save Docker image
-        uses: actions/upload-artifact@v2
-        with:
-          name: docker-artifact
-          path: artifacts
-          retention-days: 1
+    - name: Save Docker image
+      uses: actions/upload-artifact@v2
+      with:
+        name: docker-artifact
+        path: artifacts
+        retention-days: 1
 
   push_image:
     needs: build_image
@@ -91,4 +75,4 @@ jobs:
             docker image rm ghcr.io/dulliag/dulli-bot:latest
             docker pull ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
             docker tag ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} ghcr.io/dulliag/dulli-bot:latest
-            docker run -itd --restart on-failure:3 --name=dulli-bot ghcr.io/dulliag/dulli-bot:latest
+            docker run -itd --env-file '/home/dulliag/dullibot.env' --restart on-failure:3 --name=dulli-bot ghcr.io/dulliag/dulli-bot:latest
