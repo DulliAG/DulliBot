@@ -23,7 +23,7 @@ interface IChangelog {
 
 export const getChangelogs = () => {
   return axios
-    .get('https://api.realliferpg.de/v1/changelog')
+    .get('https://api.panthor.de/v1/changelog')
     .then((response) => {
       if (response.status !== 200) throw new Error(response.statusText);
       return response.data;

@@ -1,15 +1,15 @@
 import { BaseCommandInteraction, Client } from 'discord.js';
 import { handleError } from '../handler/error.handler';
 import { Command } from '../core/command';
-import RealliferpgUpdates from '../core/realliferpg-updates';
+import PanthorLifeUpdate from '../core/panthor-life-update';
 
-export const ReallifeRpgCommand: Command = {
+export const PanthorLifeCommand: Command = {
   name: 'mod-update',
-  description: 'Check for a new ReallifeRPG update',
+  description: 'Check for a new Panthor Life update',
   type: 'CHAT_INPUT',
   run: async (client: Client, interaction: BaseCommandInteraction) => {
     try {
-      RealliferpgUpdates(client);
+      PanthorLifeUpdate(client);
 
       await interaction.followUp({
         ephemeral: true,

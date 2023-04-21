@@ -15,7 +15,7 @@ jobs:
       - name: Build Docker image
         run: |
           rm .npmrc 
-          echo $'@dulliag:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken='$NPM_TOKEN >> .npmrc
+          echo $'@kleithor:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken='$NPM_TOKEN >> .npmrc
           docker build --secret id=npm,src=.npmrc . -t ghcr.io/dulliag/dulli-bot:${{ github.ref_name }}
           mkdir -p artifacts
           docker save ghcr.io/dulliag/dulli-bot:${{ github.ref_name }} > artifacts/docker-image.tar

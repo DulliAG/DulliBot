@@ -4,7 +4,7 @@ import { Client } from 'discord.js';
 import { readFileSync, writeFile } from 'fs';
 import { bot, arma, roles_by_reaction } from '../config.json';
 import { logger } from '../core/log';
-import ReallifeRpgUpdates, { getChangelogs } from '../core/realliferpg-updates';
+import PanthorLifeUpdate, { getChangelogs } from '../core/panthor-life-update';
 import { Commands } from '../core/command';
 import roleClaim from '../core/role-claim';
 import { handleError } from '../handler/error.handler';
@@ -20,10 +20,10 @@ export default (client: Client) => {
         await logger.log('LOG', 'Setup', `${client.user?.username} started!`);
       }
 
-      // Check for ReallifeRPG updates (if enabled)
+      // Check for Panthor Life updates (if enabled)
       if (arma.enabled) {
         const CFG = JSON.parse(readFileSync('./src/config.json', 'utf-8'));
-        const task = ReallifeRpgUpdates(client);
+        const task = PanthorLifeUpdate(client);
         const changelogs = await getChangelogs();
         const latestChangelog = changelogs.data.shift();
         CFG.arma.current_version = latestChangelog.version;
