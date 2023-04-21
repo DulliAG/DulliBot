@@ -1,8 +1,8 @@
 import { Client } from 'discord.js';
-import { log } from '../core/log';
+import { logger } from '../core/log';
 
 export default (client: Client) => {
-  client.on('error', (err) => {
-    log('ERROR', 'Unknown', JSON.stringify(err));
+  client.on('error', async (err) => {
+    await logger.log('ERROR', 'Unknown', JSON.stringify(err));
   });
 };

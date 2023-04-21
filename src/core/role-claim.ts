@@ -7,8 +7,7 @@ import {
   PartialUser,
   User,
 } from 'discord.js';
-import { log } from './log';
-
+import { logger } from './log';
 import { roles_by_reaction, channels } from '../config.json';
 
 const LOG_CATEGORY = 'RolesByReaction';
@@ -29,12 +28,12 @@ export default (client: Client) => {
     final_message: string,
     emojis: GuildEmoji[]
   ) => {
-    client.guilds.cache.forEach((guild) => {
+    client.guilds.cache.forEach(async (guild) => {
       const channel = guild.channels.cache.find((ch) => ch.id === channelId);
 
       if (!channel) {
-        log(
-          'WARNING',
+        await logger.log(
+          'WARN',
           LOG_CATEGORY,
           `Der Kanal '${channelId}' auf '${guild.name}' wurde nicht gefunden!`
         );
@@ -42,7 +41,11 @@ export default (client: Client) => {
       }
 
       if (!channel.isText()) {
-        return log('WARNING', LOG_CATEGORY, `Der Kanal '${channel.id}' ist kein Textkanal!`);
+        return await logger.log(
+          'WARN',
+          LOG_CATEGORY,
+          `Der Kanal '${channel.id}' ist kein Textkanal!`
+        );
       }
 
       channel.messages.fetch().then((msgs) => {
@@ -50,9 +53,13 @@ export default (client: Client) => {
           channel
             .send(final_message)
             .then((message) => addReactions(message, emojis))
-            .catch((err) =>
-              log('ERROR', LOG_CATEGORY, `Die Nachricht konnte nicht verschickt werden`)
-            );
+            .catch(async (err) => {
+              await logger.log(
+                'ERROR',
+                LOG_CATEGORY,
+                `Die Nachricht konnte nicht verschickt werden`
+              );
+            });
         } else {
           for (const msg of msgs) {
             msg[1].edit(final_message);
@@ -66,7 +73,7 @@ export default (client: Client) => {
   const getCustomEmoji = (emojiName: string) =>
     client.emojis.cache.find((emoji) => emoji.name === emojiName);
 
-  const handleReaction = (
+  const handleReaction = async (
     reaction: MessageReaction | PartialMessageReaction,
     user: User | PartialUser,
     addRole: boolean
@@ -77,7 +84,7 @@ export default (client: Client) => {
       (entry) => entry.emoji === reaction.emoji.name
     )[0];
     if (!role) {
-      log(
+      await logger.log(
         'ERROR',
         LOG_CATEGORY,
         `Eine Rolle für das Emoji '${reaction.emoji.name}' wurde nicht gefunden! Schaue mal in der '../config.json' nach!`
@@ -89,7 +96,7 @@ export default (client: Client) => {
       (guildMember) => guildMember.id === user.id
     );
     if (!guildMember) {
-      log(
+      await logger.log(
         'ERROR',
         LOG_CATEGORY,
         `Ein GuildMember für den Benutzer '${user.id}' konnte auf '${reaction.message.guild?.name}' nicht gefunden werden!`
@@ -100,33 +107,37 @@ export default (client: Client) => {
     try {
       if (addRole) {
         guildMember.roles.add(role.id);
-        log(
+        await logger.log(
           'LOG',
           LOG_CATEGORY,
           `'${guildMember.user.tag}' wurde die Rolle '${role.name}' mittels Reaktion hinzugefügt!`
         );
       } else {
         guildMember.roles.remove(role.id);
-        log(
+        await logger.log(
           'LOG',
           LOG_CATEGORY,
           `'${guildMember.user.tag}' wurde die Rolle '${role.name}' mittels Reaktion entfernt!`
         );
       }
     } catch (err) {
-      log('ERROR', LOG_CATEGORY, `Die Rolle konnte nicht zugewiesen werden!\nGrund: ${err}`);
+      await logger.log(
+        'ERROR',
+        LOG_CATEGORY,
+        `Die Rolle konnte nicht zugewiesen werden!\nGrund: ${err}`
+      );
     }
   };
 
   // Code
   const reactions: GuildEmoji[] = [];
   let message_text = '```diff\n+ Wähle deine Rollen aus!```\n';
-  roles_by_reaction.reactions.forEach((reaction) => {
+  roles_by_reaction.reactions.forEach(async (reaction) => {
     const emoji = getCustomEmoji(reaction.emoji);
     const name = reaction.name;
 
     if (!emoji) {
-      log('ERROR', LOG_CATEGORY, `Emoji '${reaction.emoji}' wurde nicht gefunden!`);
+      await logger.log('ERROR', LOG_CATEGORY, `Emoji '${reaction.emoji}' wurde nicht gefunden!`);
     }
 
     reactions.push(emoji!);

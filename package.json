@@ -14,13 +14,14 @@
   "devDependencies": {
     "@types/cron": "^1.7.3",
     "@types/node": "^17.0.23",
+    "nodemon": "^2.0.22",
     "standard-version": "^9.5.0",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
   },
   "dependencies": {
     "@dulliag/discord-helper": "^1.4.2",
-    "@dulliag/logger.js": "^2.1.1",
+    "@kleithor/logger": "^2.2.0",
     "axios": "^0.26.1",
     "cron": "^1.8.2",
     "date-fns": "^2.28.0",

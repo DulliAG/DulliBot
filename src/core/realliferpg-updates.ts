@@ -4,8 +4,8 @@ import fs from 'fs';
 import { format, parseISO } from 'date-fns';
 import axios from 'axios';
 
-import { log } from './log';
-import { arma, channels, roles } from '../config.json';
+import { logger } from './log';
+import { channels } from '../config.json';
 
 interface IChangelog {
   id: number;
@@ -43,7 +43,7 @@ export default (client: Client) => {
     const LATEST_CHANGELOG = CHANGELOGS.data.shift();
 
     if (!CHANGELOGS || !LATEST_CHANGELOG) {
-      return log('ERROR', LOG_CATEGORY, "Can't retrieve changelogs!");
+      return await logger.log('ERROR', LOG_CATEGORY, "Can't retrieve changelogs!");
     }
 
     if (LATEST_CHANGELOG && LATEST_CHANGELOG.version === LATEST_VERSION) return;
@@ -72,23 +72,23 @@ export default (client: Client) => {
               },
             ],
           })
-          .then(() => {
+          .then(async () => {
             CFG.arma.current_version = LATEST_CHANGELOG.version;
             fs.writeFileSync('./src/config.json', JSON.stringify(CFG));
 
-            log(
+            await logger.log(
               'LOG',
               LOG_CATEGORY,
               `Benachrichtigung für Version '${LATEST_CHANGELOG.version}' wurde verschickt!`
             );
           })
-          .catch((err) =>
-            log(
+          .catch(async (err) => {
+            await logger.log(
               'ERROR',
               LOG_CATEGORY,
               'Benachrichtigung für Arma Changelogs abschicken. Grund: ' + err
-            )
-          );
+            );
+          });
       }
     });
   });

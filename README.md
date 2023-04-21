@@ -62,7 +62,7 @@
 1. Clone the Repository
 
    ```shell
-   git clone https://github.com/DulliAG/Discord-Bot.git
+   git clone https://github.com/DulliAG/DulliBot.git
    ```
 
 2. Create an `.env`-file for your credentials

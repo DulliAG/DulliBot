@@ -1,5 +1,5 @@
 import { BaseCommandInteraction, Client } from 'discord.js';
-import { log } from '../core/log';
+import { logger } from '../core/log';
 import { Command } from '../core/command';
 import { handleError } from '../handler/error.handler';
 
@@ -27,14 +27,14 @@ export const ClearCommand: Command = {
           content: `Der Kanal '${channel.name}' wurde von '${interaction.user.username}' gesäubert!`,
         });
 
-        log(
+        await logger.log(
           'LOG',
           'ExecuteCommand',
           `Der Kanal '${channel.name}' wurde von '${interaction.user.username}' gesäubert!`
         );
       }
     } catch (error) {
-      handleError(error, 'ExecuteCommand');
+      await handleError(error, 'ExecuteCommand');
     }
   },
 };

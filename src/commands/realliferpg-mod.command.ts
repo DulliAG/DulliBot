@@ -16,7 +16,7 @@ export const ReallifeRpgCommand: Command = {
         content: `Die Prüfung wurde abgeschlossen!`,
       });
     } catch (error) {
-      handleError(error, 'ExecuteCommand');
+      await handleError(error, 'ExecuteCommand');
     }
   },
 };

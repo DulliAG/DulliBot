@@ -1,6 +1,6 @@
 import { BaseCommandInteraction, Client } from 'discord.js';
 import { Commands } from '../core/command';
-import { log } from '../core/log';
+import { logger } from '../core/log';
 
 const LOG_CATEGORY = 'ExecuteSlashCommand';
 
@@ -9,11 +9,11 @@ const handleSlashCommand = async (client: Client, interaction: BaseCommandIntera
 
   if (!slashCommand) {
     interaction.followUp({ content: "Command isn't a slash command" });
-    log('WARNING', LOG_CATEGORY, "Command isn't a slash command");
+    await logger.log('WARN', LOG_CATEGORY, "Command isn't a slash command");
     return;
   }
 
-  log(
+  await logger.log(
     'LOG',
     LOG_CATEGORY,
     `${interaction.user.tag} executed the /-command '${interaction.commandName}'`

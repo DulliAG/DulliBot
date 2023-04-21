@@ -1,5 +1,5 @@
 import { Client } from 'discord.js';
-import { log } from '../core/log';
+import { logger } from '../core/log';
 
 import { auto_publish } from '../config.json';
 
@@ -28,8 +28,8 @@ export default (client: Client) => {
       const LOG_MESSAGE = `Published message in '${message.channel.name}'!`;
       message
         .crosspost()
-        .then(() => log('LOG', LOG_CATEGORY, LOG_MESSAGE))
-        .catch((err) => log('ERROR', LOG_CATEGORY, err));
+        .then(async () => await logger.log('LOG', LOG_CATEGORY, LOG_MESSAGE))
+        .catch(async (err) => await logger.log('ERROR', LOG_CATEGORY, err));
       return;
     }
   });
