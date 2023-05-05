@@ -5,21 +5,7 @@ import { format, parseISO } from 'date-fns';
 import axios from 'axios';
 
 import { logger } from './log';
-import { channels } from '../config.json';
-
-interface IChangelog {
-  id: number;
-  version: string;
-  note: string;
-  active: number;
-  size: string;
-  change_mission: string[];
-  change_map: string[];
-  change_mod: string[];
-  release_at: string;
-  created_at: string;
-  updated_at: string;
-}
+import { channels, roles } from '../config.json';
 
 export const getChangelogs = () => {
   return axios
@@ -52,11 +38,11 @@ export default (client: Client) => {
       if (channel && channel.isText()) {
         channel
           .send({
-            // content: `<@&${roles.rlrpg}>`,
-            content: 'q',
+            content: `<@&${roles.rlrpg}>`,
             embeds: [
               {
                 title: `Changelog v${LATEST_CHANGELOG.version}`,
+                url: `https://info.dulliag.de/changelogs?changelog=${LATEST_CHANGELOG.version}`,
                 description: `Es gibt einen neuen Changelog!\n Das Update steht im Launcher am **${format(
                   parseISO(LATEST_CHANGELOG.release_at),
                   'dd.mm.yyy'
