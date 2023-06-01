@@ -1,0 +1,3 @@
+{
+  "ignore": ["**/*.test.ts", "src/config.json"]
+}
